@@ -1,0 +1,229 @@
+.navbar {
+  border-bottom: 1px solid;
+  padding: 0.75rem 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: all 0.3s ease;
+}
+
+.navbar.light {
+  background-color: var(--background-light);
+  border-color: var(--surface-light);
+  color: var(--text-light);
+}
+
+.navbar.dark {
+  background-color: var(--background-dark);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-dark);
+}
+
+.navbar-container {
+  max-width: 1536px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .navbar-container {
+    gap: 2rem;
+  }
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--primary);
+}
+
+.logo h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+.navbar-center {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.search-box {
+  display: flex;
+  position: relative;
+  align-items: stretch;
+  border-radius: 9999px;
+  height: 2.5rem;
+  width: 100%;
+  max-width: 600px;
+  overflow: visible;
+}
+
+.search-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 1rem;
+  border-top-left-radius: 9999px;
+  border-bottom-left-radius: 9999px;
+}
+
+.navbar.light .search-icon {
+  background-color: var(--surface-light);
+  color: var(--muted-light);
+}
+
+.navbar.dark .search-icon {
+  background-color: var(--surface-dark);
+  color: var(--muted-dark);
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  padding: 0 1rem;
+  font-size: 0.875rem;
+}
+
+.navbar.light .search-input {
+  background-color: var(--surface-light);
+  color: var(--text-light);
+}
+
+.navbar.dark .search-input {
+  background-color: var(--surface-dark);
+  color: var(--text-dark);
+}
+
+.navbar.light .search-input::placeholder {
+  color: var(--muted-light);
+}
+
+.navbar.dark .search-input::placeholder {
+  color: var(--muted-dark);
+}
+
+.clear-search-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.75rem;
+  border-top-right-radius: 9999px;
+  border-bottom-right-radius: 9999px;
+  transition: opacity 0.2s ease;
+}
+
+.navbar.light .clear-search-btn {
+  background-color: var(--surface-light);
+  color: var(--muted-light);
+}
+
+.navbar.dark .clear-search-btn {
+  background-color: var(--surface-dark);
+  color: var(--muted-dark);
+}
+
+.clear-search-btn:hover {
+  opacity: 0.7;
+}
+
+.clear-search-btn .material-symbols-outlined {
+  font-size: 20px;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  transition: all 0.2s ease;
+}
+
+.navbar.light .theme-toggle {
+  background-color: var(--surface-light);
+  color: var(--text-light);
+}
+
+.navbar.dark .theme-toggle {
+  background-color: var(--surface-dark);
+  color: var(--text-dark);
+}
+
+.theme-toggle:hover {
+  opacity: 0.8;
+}
+
+.btn-primary {
+  min-width: 84px;
+  height: 2.5rem;
+  padding: 0 1rem;
+  border-radius: 9999px;
+  background-color: var(--primary);
+  color: var(--background-dark);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.015em;
+  transition: opacity 0.2s ease;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+.btn-secondary {
+  min-width: 84px;
+  height: 2.5rem;
+  padding: 0 1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.015em;
+  transition: all 0.2s ease;
+}
+
+.navbar.light .btn-secondary {
+  background-color: var(--surface-light);
+  color: var(--text-light);
+}
+
+.navbar.dark .btn-secondary {
+  background-color: var(--surface-dark);
+  color: var(--text-dark);
+}
+
+.navbar.light .btn-secondary:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.navbar.dark .btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}

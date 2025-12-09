@@ -146,14 +146,15 @@ const TournamentRankingPage = () => {
         setIsLoading(true);
         const data = await getRankings(50);
 
-        if (data && data.length > 0) {
-          // 백엔드 데이터에 rank 추가
-          const rankedData = data.map((item, index) => ({
-            ...item,
-            rank: index + 1,
-            win_rate: item.wins && (item.wins + item.losses) > 0
-              ? (item.wins / (item.wins + item.losses)) * 100
-              : 0,
+        if (data && data.rankings && data.rankings.length > 0) {
+          // 백엔드 데이터 사용 (이미 rank와 win_count 포함)
+          const rankedData = data.rankings.map((item) => ({
+            ...item.image,
+            rank: item.rank,
+            wins: item.win_count,
+            losses: 0, // 백엔드에서 losses 제공 안 함
+            win_rate: item.win_count > 0 ? 100 : 0, // 간단한 승률 계산
+            elo_score: null, // 백엔드에서 elo_score 제공 안 함
           }));
           setRankings(rankedData);
           setUseDummyData(false);

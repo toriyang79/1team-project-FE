@@ -207,7 +207,7 @@ const TournamentBattlePage = () => {
         </div>
 
         {/* 배틀 그리드 */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {/* 왼쪽 이미지 */}
           <div
             className={`

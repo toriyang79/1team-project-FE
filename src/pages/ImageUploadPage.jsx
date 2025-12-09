@@ -6,6 +6,7 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { uploadImage } from '../api/imageAPI';
 import Button from '../components/Button';
 import LoadingSpinner from '../components/LoadingSpinner';
 
@@ -73,12 +74,25 @@ const ImageUploadPage = () => {
 
     setIsUploading(true);
 
-    // 더미 업로드 시뮬레이션
-    setTimeout(() => {
-      alert('이미지가 업로드되었습니다! (더미 모드)');
-      setIsUploading(false);
+    try {
+      // FormData 생성
+      const uploadFormData = new FormData();
+      uploadFormData.append('image', imageFile);
+      uploadFormData.append('prompt', formData.prompt);
+      uploadFormData.append('model_name', formData.model_name);
+      uploadFormData.append('is_tournament_opt_in', formData.is_tournament_opt_in);
+
+      // 백엔드 API 호출
+      const response = await uploadImage(uploadFormData);
+
+      alert('이미지가 성공적으로 업로드되었습니다!');
       navigate('/');
-    }, 2000);
+    } catch (error) {
+      console.error('업로드 실패:', error);
+      alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   // 이미지 제거
@@ -103,11 +117,6 @@ const ImageUploadPage = () => {
           <p className="text-muted-light dark:text-muted-dark">
             AI로 생성한 이미지를 커뮤니티와 공유하세요
           </p>
-          <div className="mt-2 px-4 py-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg inline-block">
-            <p className="text-sm text-yellow-800 dark:text-yellow-200">
-              ⚠️ 더미 데이터 모드 - 실제 업로드는 되지 않습니다
-            </p>
-          </div>
         </div>
 
         {/* 업로드 폼 */}

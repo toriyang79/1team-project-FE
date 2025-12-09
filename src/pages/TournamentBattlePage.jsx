@@ -116,27 +116,29 @@ const TournamentBattlePage = () => {
     setIsVoting(true);
     setSelectedSide(winner.id === match[0].id ? 'left' : 'right');
 
-    try {
-      if (!useDummyData) {
-        // 실제 API 호출
-        await vote(winner.id, loser.id);
-      }
+    // 투표 카운트 증가 (로컬)
+    setVoteCount(voteCount + 1);
 
-      // 투표 카운트 증가
-      setVoteCount(voteCount + 1);
+    // 애니메이션 효과
+    setTimeout(async () => {
+      try {
+        if (!useDummyData) {
+          // 실제 API 호출
+          await vote(winner.id, loser.id);
+        }
 
-      // 애니메이션 후 다음 매치 로딩
-      setTimeout(async () => {
+        // 다음 매치 로딩
         await loadMatch();
+      } catch (error) {
+        console.error('투표 또는 다음 매치 로딩 실패:', error);
+        // 에러 발생 시에도 새로운 더미 매치 제공
+        setMatch(getRandomMatch());
+        setUseDummyData(true);
+      } finally {
         setIsVoting(false);
         setSelectedSide(null);
-      }, 800);
-    } catch (error) {
-      console.error('투표 실패:', error);
-      alert('투표에 실패했습니다. 다시 시도해주세요.');
-      setIsVoting(false);
-      setSelectedSide(null);
-    }
+      }
+    }, 800);
   };
 
   // 로딩 중

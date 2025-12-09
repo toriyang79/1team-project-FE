@@ -5,7 +5,7 @@
  */
 
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
-import ImageListPageDummy from './pages/ImageListPageDummy';
+import ImageListPage from './pages/ImageListPage';
 import ImageDetailPage from './pages/ImageDetailPage';
 import ImageUploadPage from './pages/ImageUploadPage';
 import RandomFeedPage from './pages/RandomFeedPage';
@@ -89,7 +89,7 @@ function App() {
 
       {/* 페이지 라우팅 */}
       <Routes>
-        <Route path="/" element={<ImageListPageDummy />} />
+        <Route path="/" element={<ImageListPage />} />
         <Route path="/images/:id" element={<ImageDetailPage />} />
         <Route path="/upload" element={<ImageUploadPage />} />
         <Route path="/random" element={<RandomFeedPage />} />

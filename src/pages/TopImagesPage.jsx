@@ -1,97 +1,43 @@
 /**
- * 인기 이미지 페이지 (더미 데이터)
+ * 인기 이미지 페이지
  *
  * 최근 24시간 인기 이미지를 보여주는 페이지
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { getTopImages } from '../api/imageAPI';
 import ImageCard from '../components/ImageCard';
-
-// 더미 인기 이미지 데이터 (좋아요 순 정렬)
-const topImages = [
-  {
-    id: 1,
-    image_url: 'https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?w=400',
-    prompt: 'Majestic dragon flying through stormy clouds with lightning',
-    model_name: 'Midjourney',
-    like_count: 456,
-    is_tournament_opt_in: true,
-  },
-  {
-    id: 2,
-    image_url: 'https://images.unsplash.com/photo-1682687982468-4584ff11f88a?w=400',
-    prompt: 'Enchanted forest with glowing mushrooms and fairy lights',
-    model_name: 'Stable Diffusion',
-    like_count: 389,
-    is_tournament_opt_in: false,
-  },
-  {
-    id: 3,
-    image_url: 'https://images.unsplash.com/photo-1707343843437-caacff5cfa74?w=400',
-    prompt: 'Futuristic city with neon lights and flying cars',
-    model_name: 'Midjourney',
-    like_count: 342,
-    is_tournament_opt_in: true,
-  },
-  {
-    id: 4,
-    image_url: 'https://images.unsplash.com/photo-1682687220198-88e9bdea9931?w=400',
-    prompt: 'Steampunk airship flying over Victorian-era city',
-    model_name: 'DALL-E 3',
-    like_count: 298,
-    is_tournament_opt_in: true,
-  },
-  {
-    id: 5,
-    image_url: 'https://images.unsplash.com/photo-1682687221080-5cb261c645cb?w=400',
-    prompt: 'Space station orbiting Earth with astronauts',
-    model_name: 'Midjourney',
-    like_count: 267,
-    is_tournament_opt_in: true,
-  },
-  {
-    id: 6,
-    image_url: 'https://images.unsplash.com/photo-1682687220063-4742bd7f7e7d?w=400',
-    prompt: 'Underwater scene with colorful coral reefs',
-    model_name: 'DALL-E 3',
-    like_count: 234,
-    is_tournament_opt_in: true,
-  },
-  {
-    id: 7,
-    image_url: 'https://images.unsplash.com/photo-1686904423955-b2b48c6b123f?w=400',
-    prompt: 'Beautiful sunset over the mountains',
-    model_name: 'DALL-E 3',
-    like_count: 198,
-    is_tournament_opt_in: true,
-  },
-  {
-    id: 8,
-    image_url: 'https://images.unsplash.com/photo-1707343846606-af9e406d584c?w=400',
-    prompt: 'Peaceful zen garden with cherry blossoms',
-    model_name: 'Stable Diffusion',
-    like_count: 176,
-    is_tournament_opt_in: false,
-  },
-  {
-    id: 9,
-    image_url: 'https://images.unsplash.com/photo-1707343848552-893e05dba6ac?w=400',
-    prompt: 'Cozy reading nook with warm lighting',
-    model_name: 'Stable Diffusion',
-    like_count: 145,
-    is_tournament_opt_in: false,
-  },
-  {
-    id: 10,
-    image_url: 'https://images.unsplash.com/photo-1707343845208-19828dc22c0f?w=400',
-    prompt: 'Abstract geometric patterns in vibrant colors',
-    model_name: 'DALL-E 3',
-    like_count: 132,
-    is_tournament_opt_in: true,
-  },
-];
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const TopImagesPage = () => {
+  const [topImages, setTopImages] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // 인기 이미지 로딩
+  useEffect(() => {
+    const loadTopImages = async () => {
+      try {
+        const data = await getTopImages(10);
+        setTopImages(data);
+      } catch (error) {
+        console.error('인기 이미지 로딩 실패:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadTopImages();
+  }, []);
+
+  // 로딩 중
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background-light dark:bg-background-dark flex items-center justify-center">
+        <LoadingSpinner size="large" text="인기 이미지를 불러오는 중..." />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background-light dark:bg-background-dark">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -108,11 +54,6 @@ const TopImagesPage = () => {
           <p className="text-muted-light dark:text-muted-dark">
             최근 24시간 동안 가장 많은 좋아요를 받은 이미지
           </p>
-          <div className="mt-2 px-4 py-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg inline-block">
-            <p className="text-sm text-yellow-800 dark:text-yellow-200">
-              ⚠️ 더미 데이터 모드
-            </p>
-          </div>
         </div>
 
         {/* 인기 이미지 그리드 */}

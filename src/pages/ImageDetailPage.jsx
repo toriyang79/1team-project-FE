@@ -1,82 +1,40 @@
 /**
- * 이미지 상세 페이지 (더미 데이터)
+ * 이미지 상세 페이지
  *
  * 개별 이미지의 상세 정보를 보여주는 페이지
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { getImageById } from '../api/imageAPI';
 import LikeButton from '../components/LikeButton';
 import Button from '../components/Button';
-
-// 더미 이미지 데이터
-const dummyImages = {
-  1: {
-    id: 1,
-    image_url: 'https://images.unsplash.com/photo-1686904423955-b2b48c6b123f?w=800',
-    prompt: 'A beautiful sunset over the mountains with vibrant orange and pink colors painting the sky',
-    model_name: 'DALL-E 3',
-    like_count: 42,
-    is_tournament_opt_in: true,
-    created_at: '2024-01-15T10:30:00Z',
-    user: {
-      name: 'ArtCreator123',
-      avatar: 'https://ui-avatars.com/api/?name=AC&background=eead2b&color=fff',
-    },
-    metadata: {
-      width: 1024,
-      height: 1024,
-      file_size: '2.3 MB',
-      format: 'PNG',
-    },
-  },
-  2: {
-    id: 2,
-    image_url: 'https://images.unsplash.com/photo-1707343843437-caacff5cfa74?w=800',
-    prompt: 'Futuristic city with neon lights and flying cars in a cyberpunk style',
-    model_name: 'Midjourney',
-    like_count: 128,
-    is_tournament_opt_in: true,
-    created_at: '2024-01-15T11:20:00Z',
-    user: {
-      name: 'CyberArtist',
-      avatar: 'https://ui-avatars.com/api/?name=CA&background=eead2b&color=fff',
-    },
-    metadata: {
-      width: 1024,
-      height: 1024,
-      file_size: '3.1 MB',
-      format: 'PNG',
-    },
-  },
-  3: {
-    id: 3,
-    image_url: 'https://images.unsplash.com/photo-1707343846606-af9e406d584c?w=800',
-    prompt: 'Peaceful zen garden with cherry blossoms and a traditional Japanese temple',
-    model_name: 'Stable Diffusion',
-    like_count: 87,
-    is_tournament_opt_in: false,
-    created_at: '2024-01-15T12:15:00Z',
-    user: {
-      name: 'ZenMaster',
-      avatar: 'https://ui-avatars.com/api/?name=ZM&background=eead2b&color=fff',
-    },
-    metadata: {
-      width: 1024,
-      height: 1024,
-      file_size: '2.8 MB',
-      format: 'PNG',
-    },
-  },
-};
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const ImageDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [isLiked, setIsLiked] = useState(false);
+  const [image, setImage] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // 더미 데이터에서 이미지 찾기
-  const image = dummyImages[id] || dummyImages[1];
+  // 이미지 데이터 로딩
+  useEffect(() => {
+    const fetchImage = async () => {
+      try {
+        setIsLoading(true);
+        const data = await getImageById(id);
+        setImage(data);
+      } catch (err) {
+        console.error('이미지 로딩 실패:', err);
+        setError('이미지를 불러올 수 없습니다.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchImage();
+  }, [id]);
 
   // 날짜 포맷팅
   const formatDate = (dateString) => {
@@ -92,9 +50,50 @@ const ImageDetailPage = () => {
 
   // 프롬프트 복사
   const handleCopyPrompt = () => {
-    navigator.clipboard.writeText(image.prompt);
-    alert('프롬프트가 클립보드에 복사되었습니다!');
+    if (image?.prompt) {
+      navigator.clipboard.writeText(image.prompt);
+      alert('프롬프트가 클립보드에 복사되었습니다!');
+    }
   };
+
+  // 이미지 URL 처리 (상대경로 → 절대경로)
+  const getImageUrl = (url) => {
+    if (!url) return '';
+    if (url.startsWith('http')) return url;
+    // 상대경로인 경우 백엔드 URL 추가
+    return `http://13.125.57.129:8000${url}`;
+  };
+
+  // 로딩 중
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background-light dark:bg-background-dark flex items-center justify-center">
+        <LoadingSpinner size="large" text="이미지를 불러오는 중..." />
+      </div>
+    );
+  }
+
+  // 에러
+  if (error || !image) {
+    return (
+      <div className="min-h-screen bg-background-light dark:bg-background-dark flex items-center justify-center">
+        <div className="text-center">
+          <span className="material-symbols-outlined text-6xl text-muted-light dark:text-muted-dark mb-4 block">
+            error_outline
+          </span>
+          <p className="text-text-light dark:text-text-dark text-xl mb-4">
+            {error || '이미지를 찾을 수 없습니다.'}
+          </p>
+          <Button variant="primary" size="medium" onClick={() => navigate(-1)}>
+            <span className="flex items-center gap-2">
+              <span className="material-symbols-outlined">arrow_back</span>
+              뒤로가기
+            </span>
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background-light dark:bg-background-dark">
@@ -109,19 +108,12 @@ const ImageDetailPage = () => {
           </Button>
         </div>
 
-        {/* 더미 데이터 경고 */}
-        <div className="mb-6 px-4 py-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg inline-block">
-          <p className="text-sm text-yellow-800 dark:text-yellow-200">
-            ⚠️ 더미 데이터 모드
-          </p>
-        </div>
-
         {/* 메인 컨텐츠 */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* 왼쪽: 이미지 */}
           <div className="bg-surface-light dark:bg-surface-dark rounded-2xl overflow-hidden">
             <img
-              src={image.image_url}
+              src={getImageUrl(image.image_url)}
               alt={image.prompt}
               className="w-full h-auto"
             />
@@ -129,16 +121,14 @@ const ImageDetailPage = () => {
 
           {/* 오른쪽: 정보 */}
           <div className="space-y-6">
-            {/* 사용자 정보 */}
+            {/* 사용자 정보 (현재는 user_id만 있음) */}
             <div className="flex items-center gap-3">
-              <img
-                src={image.user.avatar}
-                alt={image.user.name}
-                className="w-12 h-12 rounded-full"
-              />
+              <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white font-bold">
+                {image.user_id}
+              </div>
               <div>
                 <p className="text-lg font-bold text-text-light dark:text-text-dark">
-                  {image.user.name}
+                  User #{image.user_id}
                 </p>
                 <p className="text-sm text-muted-light dark:text-muted-dark">
                   {formatDate(image.created_at)}
@@ -151,7 +141,7 @@ const ImageDetailPage = () => {
               <LikeButton
                 imageId={image.id}
                 initialLikeCount={image.like_count}
-                initialIsLiked={isLiked}
+                initialIsLiked={false}
               />
               <span className="text-muted-light dark:text-muted-dark">
                 {image.like_count} 좋아요
@@ -172,7 +162,7 @@ const ImageDetailPage = () => {
                 </Button>
               </div>
               <p className="text-text-light dark:text-text-dark leading-relaxed">
-                {image.prompt}
+                {image.prompt || '프롬프트 정보가 없습니다.'}
               </p>
             </div>
 
@@ -192,6 +182,12 @@ const ImageDetailPage = () => {
                     {image.is_tournament_opt_in ? '✅ 참여 중' : '❌ 미참여'}
                   </span>
                 </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-light dark:text-muted-dark">토너먼트 승수</span>
+                  <span className="text-text-light dark:text-text-dark">
+                    {image.tournament_win_count}승
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -202,27 +198,27 @@ const ImageDetailPage = () => {
               </h3>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <p className="text-sm text-muted-light dark:text-muted-dark">해상도</p>
-                  <p className="text-text-light dark:text-text-dark font-medium">
-                    {image.metadata.width} × {image.metadata.height}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-light dark:text-muted-dark">파일 크기</p>
-                  <p className="text-text-light dark:text-text-dark font-medium">
-                    {image.metadata.file_size}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-light dark:text-muted-dark">포맷</p>
-                  <p className="text-text-light dark:text-text-dark font-medium">
-                    {image.metadata.format}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-light dark:text-muted-dark">ID</p>
+                  <p className="text-sm text-muted-light dark:text-muted-dark">이미지 ID</p>
                   <p className="text-text-light dark:text-text-dark font-medium">
                     #{image.id}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-light dark:text-muted-dark">활성 상태</p>
+                  <p className="text-text-light dark:text-text-dark font-medium">
+                    {image.is_active ? '✅ 활성' : '❌ 비활성'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-light dark:text-muted-dark">생성일</p>
+                  <p className="text-text-light dark:text-text-dark font-medium text-sm">
+                    {formatDate(image.created_at)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-light dark:text-muted-dark">수정일</p>
+                  <p className="text-text-light dark:text-text-dark font-medium text-sm">
+                    {formatDate(image.updated_at)}
                   </p>
                 </div>
               </div>

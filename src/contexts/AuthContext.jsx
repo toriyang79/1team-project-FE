@@ -24,6 +24,13 @@ export const AuthProvider = ({ children }) => {
   // 인증 상태 확인
   const checkAuth = () => {
     try {
+      // localStorage 접근 가능 여부 확인
+      if (typeof window === 'undefined' || !window.localStorage) {
+        console.warn('localStorage를 사용할 수 없습니다.');
+        setIsLoading(false);
+        return;
+      }
+
       const token = localStorage.getItem('token');
 
       if (token) {
@@ -48,8 +55,13 @@ export const AuthProvider = ({ children }) => {
         }
       }
     } catch (error) {
-      console.error('인증 확인 실패:', error);
-      logout();
+      // localStorage 접근 에러는 무시 (정상 동작)
+      if (error.name === 'SecurityError' || error.message.includes('storage')) {
+        console.warn('localStorage 접근이 차단되었습니다. 인증 기능이 제한될 수 있습니다.');
+      } else {
+        console.error('인증 확인 실패:', error);
+        logout();
+      }
     } finally {
       setIsLoading(false);
     }
@@ -58,8 +70,11 @@ export const AuthProvider = ({ children }) => {
   // 로그인 함수
   const login = (token) => {
     try {
-      // localStorage에 토큰 저장
-      localStorage.setItem('token', token);
+      // localStorage 접근 가능 여부 확인
+      if (typeof window !== 'undefined' && window.localStorage) {
+        // localStorage에 토큰 저장
+        localStorage.setItem('token', token);
+      }
 
       // 토큰 디코딩하여 사용자 정보 추출
       const decoded = jwtDecode(token);
@@ -80,7 +95,13 @@ export const AuthProvider = ({ children }) => {
 
   // 로그아웃 함수
   const logout = () => {
-    localStorage.removeItem('token');
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.removeItem('token');
+      }
+    } catch (error) {
+      console.warn('localStorage 접근 실패:', error);
+    }
     setUser(null);
     setIsAuthenticated(false);
   };

@@ -1,10 +1,11 @@
 /**
- * 토너먼트 배틀 페이지 (더미 데이터)
+ * 토너먼트 배틀 페이지
  *
  * 두 이미지 중 하나를 선택하는 1vs1 대결 페이지
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { getMatch, vote } from '../api/tournamentAPI';
 import Button from '../components/Button';
 import LoadingSpinner from '../components/LoadingSpinner';
 
@@ -68,31 +69,100 @@ const imagePools = [
   },
 ];
 
-// 랜덤하게 두 이미지 선택
+// 랜덤하게 두 이미지 선택 (폴백용)
 const getRandomMatch = () => {
   const shuffled = [...imagePools].sort(() => Math.random() - 0.5);
   return [shuffled[0], shuffled[1]];
 };
 
 const TournamentBattlePage = () => {
-  const [match, setMatch] = useState(getRandomMatch());
+  const [match, setMatch] = useState(null);
   const [voteCount, setVoteCount] = useState(0);
   const [isVoting, setIsVoting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedSide, setSelectedSide] = useState(null);
+  const [useDummyData, setUseDummyData] = useState(false);
+
+  // 매치 로딩
+  const loadMatch = async () => {
+    try {
+      setIsLoading(true);
+      const data = await getMatch();
+
+      if (data && data.image1 && data.image2) {
+        setMatch([data.image1, data.image2]);
+        setUseDummyData(false);
+      } else {
+        // API 데이터가 없으면 더미 데이터 사용
+        setMatch(getRandomMatch());
+        setUseDummyData(true);
+      }
+    } catch (error) {
+      console.error('매치 로딩 실패, 더미 데이터 사용:', error);
+      setMatch(getRandomMatch());
+      setUseDummyData(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 초기 매치 로딩
+  useEffect(() => {
+    loadMatch();
+  }, []);
 
   // 투표 핸들러
-  const handleVote = (winner, loser) => {
+  const handleVote = async (winner, loser) => {
     setIsVoting(true);
     setSelectedSide(winner.id === match[0].id ? 'left' : 'right');
 
-    // 애니메이션 효과
-    setTimeout(() => {
+    try {
+      if (!useDummyData) {
+        // 실제 API 호출
+        await vote(winner.id, loser.id);
+      }
+
+      // 투표 카운트 증가
       setVoteCount(voteCount + 1);
-      setMatch(getRandomMatch());
+
+      // 애니메이션 후 다음 매치 로딩
+      setTimeout(async () => {
+        await loadMatch();
+        setIsVoting(false);
+        setSelectedSide(null);
+      }, 800);
+    } catch (error) {
+      console.error('투표 실패:', error);
+      alert('투표에 실패했습니다. 다시 시도해주세요.');
       setIsVoting(false);
       setSelectedSide(null);
-    }, 800);
+    }
   };
+
+  // 로딩 중
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background-light dark:bg-background-dark flex items-center justify-center">
+        <LoadingSpinner size="large" text="매치를 불러오는 중..." />
+      </div>
+    );
+  }
+
+  // 매치가 없는 경우
+  if (!match || match.length < 2) {
+    return (
+      <div className="min-h-screen bg-background-light dark:bg-background-dark flex items-center justify-center">
+        <div className="text-center">
+          <span className="material-symbols-outlined text-6xl text-muted-light dark:text-muted-dark mb-4 block">
+            error_outline
+          </span>
+          <p className="text-text-light dark:text-text-dark text-xl">
+            토너먼트 매치를 불러올 수 없습니다.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background-light dark:bg-background-dark">
@@ -110,11 +180,13 @@ const TournamentBattlePage = () => {
           <p className="text-muted-light dark:text-muted-dark">
             두 이미지 중 더 마음에 드는 이미지를 선택하세요
           </p>
-          <div className="mt-2 px-4 py-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg inline-block">
-            <p className="text-sm text-yellow-800 dark:text-yellow-200">
-              ⚠️ 더미 데이터 모드
-            </p>
-          </div>
+          {useDummyData && (
+            <div className="mt-2 px-4 py-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg inline-block">
+              <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                ⚠️ 더미 데이터 모드 - 백엔드 API 미응답
+              </p>
+            </div>
+          )}
         </div>
 
         {/* 투표 카운터 */}

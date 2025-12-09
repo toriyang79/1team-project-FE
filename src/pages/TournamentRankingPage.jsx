@@ -1,11 +1,13 @@
 /**
- * 토너먼트 랭킹 페이지 (더미 데이터)
+ * 토너먼트 랭킹 페이지
  *
  * 토너먼트 투표 결과를 기반으로 한 랭킹을 보여주는 페이지
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { getRankings } from '../api/tournamentAPI';
 import ImageCard from '../components/ImageCard';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 // 더미 랭킹 데이터 (승률 기준 정렬)
 const rankingData = [
@@ -132,27 +134,74 @@ const rankingData = [
 ];
 
 const TournamentRankingPage = () => {
-  const [sortBy, setSortBy] = useState('rank'); // rank, wins, win_rate, elo_score
+  const [rankings, setRankings] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [sortBy, setSortBy] = useState('rank');
+  const [useDummyData, setUseDummyData] = useState(false);
+
+  // 랭킹 로딩
+  useEffect(() => {
+    const loadRankings = async () => {
+      try {
+        setIsLoading(true);
+        const data = await getRankings(50);
+
+        if (data && data.length > 0) {
+          // 백엔드 데이터에 rank 추가
+          const rankedData = data.map((item, index) => ({
+            ...item,
+            rank: index + 1,
+            win_rate: item.wins && (item.wins + item.losses) > 0
+              ? (item.wins / (item.wins + item.losses)) * 100
+              : 0,
+          }));
+          setRankings(rankedData);
+          setUseDummyData(false);
+        } else {
+          // API 데이터가 없으면 더미 데이터 사용
+          setRankings(rankingData);
+          setUseDummyData(true);
+        }
+      } catch (error) {
+        console.error('랭킹 로딩 실패, 더미 데이터 사용:', error);
+        setRankings(rankingData);
+        setUseDummyData(true);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadRankings();
+  }, []);
 
   // 정렬 로직
   const getSortedRankings = () => {
-    const sorted = [...rankingData].sort((a, b) => {
+    const sorted = [...rankings].sort((a, b) => {
       switch (sortBy) {
         case 'wins':
-          return b.wins - a.wins;
+          return (b.wins || b.tournament_win_count || 0) - (a.wins || a.tournament_win_count || 0);
         case 'win_rate':
-          return b.win_rate - a.win_rate;
+          return (b.win_rate || 0) - (a.win_rate || 0);
         case 'elo_score':
-          return b.elo_score - a.elo_score;
+          return (b.elo_score || 0) - (a.elo_score || 0);
         case 'rank':
         default:
-          return a.rank - b.rank;
+          return (a.rank || 0) - (b.rank || 0);
       }
     });
     return sorted;
   };
 
   const sortedRankings = getSortedRankings();
+
+  // 로딩 중
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background-light dark:bg-background-dark flex items-center justify-center">
+        <LoadingSpinner size="large" text="랭킹을 불러오는 중..." />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background-light dark:bg-background-dark">
@@ -170,11 +219,13 @@ const TournamentRankingPage = () => {
           <p className="text-muted-light dark:text-muted-dark">
             토너먼트 배틀 결과를 기반으로 한 이미지 랭킹
           </p>
-          <div className="mt-2 px-4 py-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg inline-block">
-            <p className="text-sm text-yellow-800 dark:text-yellow-200">
-              ⚠️ 더미 데이터 모드
-            </p>
-          </div>
+          {useDummyData && (
+            <div className="mt-2 px-4 py-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg inline-block">
+              <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                ⚠️ 더미 데이터 모드 - 백엔드 API 미응답
+              </p>
+            </div>
+          )}
         </div>
 
         {/* 정렬 옵션 */}
@@ -292,20 +343,22 @@ const TournamentRankingPage = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-xs text-muted-light dark:text-muted-dark mb-1">승률</p>
-                    <p className="text-lg font-bold text-primary">{item.win_rate.toFixed(1)}%</p>
+                    <p className="text-lg font-bold text-primary">{(item.win_rate || 0).toFixed(1)}%</p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-light dark:text-muted-dark mb-1">전적</p>
                     <p className="text-sm text-text-light dark:text-text-dark">
-                      {item.wins}승 {item.losses}패
+                      {item.wins || item.tournament_win_count || 0}승 {item.losses || 0}패
                     </p>
                   </div>
-                  <div className="col-span-2">
-                    <p className="text-xs text-muted-light dark:text-muted-dark mb-1">ELO</p>
-                    <p className="text-lg font-bold text-text-light dark:text-text-dark">
-                      {item.elo_score}
-                    </p>
-                  </div>
+                  {item.elo_score && (
+                    <div className="col-span-2">
+                      <p className="text-xs text-muted-light dark:text-muted-dark mb-1">ELO</p>
+                      <p className="text-lg font-bold text-text-light dark:text-text-dark">
+                        {item.elo_score}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

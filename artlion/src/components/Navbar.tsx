@@ -41,7 +41,7 @@ const Navbar: React.FC<NavbarProps & { onSearch?: (query: string) => void; onUpl
 
   return (
     <header className="relative flex flex-col bg-background-light dark:bg-black border-b border-solid border-gray-200 dark:border-gray-700">
-      <div className="flex items-center justify-between px-4 py-3">
+      <div className="w-full max-w-6xl mx-auto flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-8">
           <Link
             to="/"
@@ -75,7 +75,7 @@ const Navbar: React.FC<NavbarProps & { onSearch?: (query: string) => void; onUpl
 
         {/* Desktop Search Bar */}
         {onSearch && (
-          <div className="flex-1 max-w-xl mx-4 hidden md:block">
+          <div className="flex-1 max-w-2xl mx-4 hidden md:block">
             <form onSubmit={handleSearch} className="relative flex items-center">
               <div className="absolute left-3 text-gray-400">
                 <span className="material-symbols-outlined text-[20px]">search</span>

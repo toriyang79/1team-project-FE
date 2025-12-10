@@ -8,6 +8,7 @@ import SocialCallback from './pages/SocialCallback';
 import MusicShell from '../music_front_v3/src/MusicShell';
 import { PlayerProvider } from '../music_front_v3/src/context/PlayerContext';
 import PlayerBar from '../music_front_v3/src/components/PlayerBar';
+import ImageApp from '../img_front/App';
 
 // Protected Route Component
 const ProtectedRoute: React.FC<{ children: React.ReactElement }> = ({ children }) => {
@@ -50,7 +51,8 @@ function App() {
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Dashboard />} />
-            <Route path="/image" element={<ImagePage />} />
+            <Route path="/image" element={<Navigate to="/images" replace />} />
+            <Route path="/images/*" element={<ImageApp />} />
             <Route path="/video" element={<VideoPage />} />
             <Route
               path="/login"

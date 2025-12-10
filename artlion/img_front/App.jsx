@@ -15,13 +15,16 @@ import Navbar from '../src/components/Navbar';
 import Footer from '../src/components/Footer';
 
 function App() {
-  const [theme, setTheme] = useState('light');
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('theme') === 'dark' ? 'dark' : 'light';
+  });
   const [isAuthenticated] = useState(false);
   const [userNickname] = useState(undefined);
   const navigate = useNavigate();
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
+    localStorage.setItem('theme', theme);
   }, [theme]);
 
   const handleToggleTheme = () => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
@@ -34,7 +37,7 @@ function App() {
   const handleUploadClick = () => navigate('/upload');
 
   return (
-    <div className="bg-background-light text-text-light min-h-screen font-display flex flex-col">
+    <div className="bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark min-h-screen w-full font-display flex flex-col">
       <div className="px-0 sm:px-8 md:px-16 lg:px-24 xl:px-40 py-0 md:py-5 flex justify-center w-full">
         <div className="w-full max-w-6xl flex flex-col flex-1">
           <Navbar

@@ -98,7 +98,7 @@ const PlayerBar = () => {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur border-t border-surface-dark/10 shadow-lg px-3 py-3 md:px-6">
+    <div className="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur border-t border-surface-dark/10 shadow-lg px-3 py-3 md:px-6 text-gray-900 dark:text-gray-100">
       <div className="flex flex-col gap-3 relative max-w-6xl mx-auto w-full">
         <div className="flex flex-col gap-3 md:flex-row md:flex-nowrap md:items-center md:gap-6 md:justify-between">
           <div className="flex items-center gap-3 min-w-0 flex-shrink-0">
@@ -110,9 +110,9 @@ const PlayerBar = () => {
               )}
             </div>
             <div className="min-w-0">
-              <p className="font-bold text-sm truncate">{current.title}</p>
-              <p className="text-xs text-muted-light truncate">
-                {current.ai_provider} Â· {current.ai_model}
+              <p className="font-bold text-sm truncate text-gray-900 dark:text-gray-100">{current.title}</p>
+              <p className="text-xs text-muted-light dark:text-gray-300 truncate">
+                {current.ai_provider} · {current.ai_model}
               </p>
             </div>
           </div>
@@ -248,3 +248,5 @@ const PlayerBar = () => {
 };
 
 export default PlayerBar;
+
+

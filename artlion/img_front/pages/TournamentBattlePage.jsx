@@ -207,22 +207,22 @@ const TournamentBattlePage = () => {
         </div>
 
         {/* 배틀 그리드 */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <div className="relative grid grid-cols-2 gap-8 max-w-xl mx-auto justify-items-center">
           {/* 왼쪽 이미지 */}
           <div
             className={`
-              relative bg-surface-light dark:bg-surface-dark rounded-2xl overflow-hidden
+              relative bg-surface-light dark:bg-surface-dark rounded-2xl overflow-hidden w-[11rem] md:w-[12rem]
               transition-all duration-300
               ${selectedSide === 'left' ? 'ring-4 ring-primary scale-105' : ''}
               ${isVoting ? 'pointer-events-none' : ''}
             `}
           >
             {/* 이미지 */}
-            <div className="aspect-square relative overflow-hidden">
+            <div className="aspect-[3/4] relative overflow-hidden max-h-[75px] bg-surface-light dark:bg-surface-dark">
               <img
                 src={match[0].image_url}
                 alt={match[0].prompt}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
               {selectedSide === 'left' && (
                 <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
@@ -234,7 +234,7 @@ const TournamentBattlePage = () => {
             </div>
 
             {/* 정보 */}
-            <div className="p-6">
+            <div className="p-4 md:p-5">
               <p className="text-text-light dark:text-text-dark mb-3 line-clamp-2">
                 {match[0].prompt}
               </p>
@@ -265,7 +265,7 @@ const TournamentBattlePage = () => {
           </div>
 
           {/* VS 구분선 */}
-          <div className="hidden lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+          <div className="hidden lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none">
             <div className="bg-primary text-white w-16 h-16 rounded-full flex items-center justify-center font-bold text-2xl shadow-lg">
               VS
             </div>
@@ -274,18 +274,18 @@ const TournamentBattlePage = () => {
           {/* 오른쪽 이미지 */}
           <div
             className={`
-              relative bg-surface-light dark:bg-surface-dark rounded-2xl overflow-hidden
+              relative bg-surface-light dark:bg-surface-dark rounded-2xl overflow-hidden w-[11rem] md:w-[12rem]
               transition-all duration-300
               ${selectedSide === 'right' ? 'ring-4 ring-primary scale-105' : ''}
               ${isVoting ? 'pointer-events-none' : ''}
             `}
           >
             {/* 이미지 */}
-            <div className="aspect-square relative overflow-hidden">
+            <div className="aspect-[3/4] relative overflow-hidden max-h-[75px] bg-surface-light dark:bg-surface-dark">
               <img
                 src={match[1].image_url}
                 alt={match[1].prompt}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
               {selectedSide === 'right' && (
                 <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
@@ -297,7 +297,7 @@ const TournamentBattlePage = () => {
             </div>
 
             {/* 정보 */}
-            <div className="p-6">
+            <div className="p-4 md:p-5">
               <p className="text-text-light dark:text-text-dark mb-3 line-clamp-2">
                 {match[1].prompt}
               </p>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { listTracks, type Track } from "../api/tracks.ts";
 import { buildCoverUrl } from "../utils/media";
@@ -54,7 +54,11 @@ const HomePage = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  const visibleTracks = displayTracks.filter((t) => !unavailable.has(t.id));
+  // 메모이제이션하여 재생 상태 변경 시 불필요한 리스트 리렌더 방지
+  const visibleTracks = useMemo(
+    () => displayTracks.filter((t) => !unavailable.has(t.id)),
+    [displayTracks, unavailable]
+  );
 
   const getMetaText = (track: Track) => {
     const duration = formatDuration(track.duration_seconds ?? (track as any).duration);
@@ -128,7 +132,10 @@ const HomePage = () => {
         <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,240px))] justify-center gap-4">
           {loading &&
             Array.from({ length: 6 }).map((_, idx) => (
-              <div key={idx} className="aspect-[3/4] rounded-xl bg-surface-light dark:bg-surface-dark animate-pulse" />
+              <div
+                key={idx}
+                className="aspect-[3/4] rounded-xl bg-surface-light dark:bg-surface-dark/70 animate-pulse"
+              />
             ))}
           {!loading &&
             !error &&
@@ -144,6 +151,7 @@ const HomePage = () => {
                         src={buildCoverUrl(track.id)}
                         alt={track.title}
                         className="w-full h-full object-cover"
+                        loading="lazy"
                       />
                     ) : (
                       <div className="w-full h-full bg-gradient-to-br from-surface-dark/60 to-surface-dark/20" />

@@ -7,40 +7,36 @@ interface NavbarProps {
   isAuthenticated: boolean;
   userNickname?: string;
   onLogout: () => void;
+  onSearch?: (query: string) => void;
+  onUploadClick?: () => void;
 }
 
-const Navbar: React.FC<NavbarProps & { onSearch?: (query: string) => void; onUploadClick?: () => void }> = ({
+const Navbar: React.FC<NavbarProps> = ({
   theme,
   onToggleTheme,
   isAuthenticated,
   userNickname,
   onLogout,
   onSearch,
-  onUploadClick
+  onUploadClick,
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState('');
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (onSearch) {
-      onSearch(searchQuery.trim());
-    }
+    onSearch?.(searchQuery.trim());
   };
 
   const handleClearSearch = () => {
     setSearchQuery('');
-    if (onSearch) {
-      onSearch('');
-    }
+    onSearch?.('');
   };
 
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
+  const toggleMobileMenu = () => setIsMobileMenuOpen((prev) => !prev);
 
   return (
-    <header className="relative flex flex-col bg-background-light dark:bg-black border-b border-solid border-gray-200 dark:border-gray-700">
+    <header className="relative flex flex-col bg-background-light dark:bg-black border-b border-solid border-gray-200 dark:border-gray-700 text-text-light dark:text-text-dark">
       <div className="w-full max-w-6xl mx-auto flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-8">
           <Link
@@ -55,12 +51,13 @@ const Navbar: React.FC<NavbarProps & { onSearch?: (query: string) => void; onUpl
                   d="M12.0799 24L4 19.2479L9.95537 8.75216L18.04 13.4961L18.0446 4H29.9554L29.96 13.4961L38.0446 8.75216L44 19.2479L35.92 24L44 28.7521L38.0446 39.2479L29.96 34.5039L29.9554 44H18.0446L18.04 34.5039L9.95537 39.2479L4 28.7521L12.0799 24Z"
                   fill="currentColor"
                   fillRule="evenodd"
-                ></path>
+                />
               </svg>
             </div>
             <h2 className="text-xl font-bold whitespace-nowrap">Artlion</h2>
           </Link>
-          <nav className="hidden md:flex items-center gap-9">
+
+          <nav className="hidden md:flex items-center gap-9 text-text-light dark:text-text-dark">
             <Link to="/image" className="text-sm font-medium hover:text-primary transition-colors">
               이미지
             </Link>
@@ -73,7 +70,6 @@ const Navbar: React.FC<NavbarProps & { onSearch?: (query: string) => void; onUpl
           </nav>
         </div>
 
-        {/* Desktop Search Bar */}
         {onSearch && (
           <div className="flex-1 max-w-2xl mx-4 hidden md:block">
             <form onSubmit={handleSearch} className="relative flex items-center">
@@ -101,7 +97,6 @@ const Navbar: React.FC<NavbarProps & { onSearch?: (query: string) => void; onUpl
         )}
 
         <div className="flex items-center gap-4">
-          {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-4">
             <button
               onClick={onToggleTheme}
@@ -124,7 +119,7 @@ const Navbar: React.FC<NavbarProps & { onSearch?: (query: string) => void; onUpl
               {isAuthenticated && userNickname ? (
                 <>
                   <span className="flex items-center text-sm font-medium px-4">
-                    👋 {userNickname}님
+                    닉네임: {userNickname}
                   </span>
                   <button
                     onClick={onLogout}
@@ -152,7 +147,6 @@ const Navbar: React.FC<NavbarProps & { onSearch?: (query: string) => void; onUpl
             </div>
           </div>
 
-          {/* Mobile Hamburger Button */}
           <button
             className="md:hidden p-2 text-text-light dark:text-text-dark"
             onClick={toggleMobileMenu}
@@ -165,12 +159,16 @@ const Navbar: React.FC<NavbarProps & { onSearch?: (query: string) => void; onUpl
         </div>
       </div>
 
-      {/* Mobile Menu */}
       {isMobileMenuOpen && (
         <div className="md:hidden flex flex-col px-4 pb-4 gap-4 border-t border-gray-200 dark:border-gray-700 animate-in slide-in-from-top-2 duration-200">
-          {/* Mobile Search */}
           {onSearch && (
-            <form onSubmit={(e) => { handleSearch(e); setIsMobileMenuOpen(false); }} className="relative flex items-center mt-2">
+            <form
+              onSubmit={(e) => {
+                handleSearch(e);
+                setIsMobileMenuOpen(false);
+              }}
+              className="relative flex items-center mt-2"
+            >
               <div className="absolute left-3 text-gray-400">
                 <span className="material-symbols-outlined text-[20px]">search</span>
               </div>
@@ -193,21 +191,33 @@ const Navbar: React.FC<NavbarProps & { onSearch?: (query: string) => void; onUpl
             </form>
           )}
 
-          <nav className="flex flex-col gap-2">
-            <Link to="/image" onClick={() => setIsMobileMenuOpen(false)} className="py-2 text-lg font-medium hover:text-primary transition-colors border-b border-gray-100 dark:border-gray-800">
+          <nav className="flex flex-col gap-2 text-text-light dark:text-text-dark">
+            <Link
+              to="/image"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="py-2 text-lg font-medium hover:text-primary transition-colors border-b border-gray-100 dark:border-gray-800"
+            >
               이미지
             </Link>
-            <Link to="/music" onClick={() => setIsMobileMenuOpen(false)} className="py-2 text-lg font-medium hover:text-primary transition-colors border-b border-gray-100 dark:border-gray-800">
+            <Link
+              to="/music"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="py-2 text-lg font-medium hover:text-primary transition-colors border-b border-gray-100 dark:border-gray-800"
+            >
               음악
             </Link>
-            <Link to="/video" onClick={() => setIsMobileMenuOpen(false)} className="py-2 text-lg font-medium hover:text-primary transition-colors border-b border-gray-100 dark:border-gray-800">
+            <Link
+              to="/video"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="py-2 text-lg font-medium hover:text-primary transition-colors border-b border-gray-100 dark:border-gray-800"
+            >
               비디오
             </Link>
           </nav>
 
           <div className="flex flex-col gap-3 mt-2">
             <div className="flex items-center justify-between">
-              <span className="font-medium">테마 설정</span>
+              <span className="font-medium">테마</span>
               <button
                 onClick={onToggleTheme}
                 className="flex items-center justify-center h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
@@ -218,7 +228,10 @@ const Navbar: React.FC<NavbarProps & { onSearch?: (query: string) => void; onUpl
 
             {onUploadClick && (
               <button
-                onClick={() => { onUploadClick(); setIsMobileMenuOpen(false); }}
+                onClick={() => {
+                  onUploadClick();
+                  setIsMobileMenuOpen(false);
+                }}
                 className="w-full flex items-center justify-center rounded-full h-12 bg-primary text-background-dark text-base font-bold hover:opacity-90 transition-opacity"
               >
                 Upload
@@ -227,9 +240,12 @@ const Navbar: React.FC<NavbarProps & { onSearch?: (query: string) => void; onUpl
 
             {isAuthenticated && userNickname ? (
               <div className="flex flex-col gap-3">
-                <span className="font-medium">👋 {userNickname}님</span>
+                <span className="font-medium">닉네임: {userNickname}</span>
                 <button
-                  onClick={() => { onLogout(); setIsMobileMenuOpen(false); }}
+                  onClick={() => {
+                    onLogout();
+                    setIsMobileMenuOpen(false);
+                  }}
                   className="w-full flex items-center justify-center rounded-full h-12 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-base font-bold transition-colors"
                 >
                   로그아웃

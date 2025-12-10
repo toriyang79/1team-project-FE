@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import Navbar from '../components/Navbar';
@@ -7,50 +7,82 @@ import { usePlayer } from '../../music_front_v3/src/context/PlayerContext';
 import { listTracks, type Track } from '../../music_front_v3/src/api/tracks';
 import { buildCoverUrl } from '../../music_front_v3/src/utils/media';
 
+type ImageItem = { id: string; title: string; url?: string };
+type VideoItem = { id: string; title: string; thumb?: string };
+
 const Dashboard: React.FC = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [activeFilter, setActiveFilter] = useState<'all' | 'image' | 'music' | 'video'>('all');
   const [tracks, setTracks] = useState<Track[]>([]);
+  const [popularImages, setPopularImages] = useState<ImageItem[]>([]);
+  const [popularVideos, setPopularVideos] = useState<VideoItem[]>([]);
   const { play } = usePlayer();
 
-  // 샘플 인기 이미지/비디오 (랜덤 셔플)
-  const imageSamples = React.useMemo(
+  const imageSamples = useMemo<ImageItem[]>(
     () =>
       [
-        { id: 'img1', title: '우주의 바다', url: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80' },
-        { id: 'img2', title: '사이버네틱 숲', url: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=800&q=80' },
-        { id: 'img3', title: '스팀펑크 도시', url: 'https://images.unsplash.com/photo-1505761671935-60b3a7427bad?auto=format&fit=crop&w=800&q=80' },
-        { id: 'img4', title: '꿈꾸는 초상', url: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80' },
-        { id: 'img5', title: '네온 거리', url: 'https://images.unsplash.com/photo-1508057198894-247b23fe5ade?auto=format&fit=crop&w=800&q=80' },
+        { id: 'img1', title: 'AI Forest', url: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=800&q=80' },
+        { id: 'img2', title: 'City Glow', url: 'https://images.unsplash.com/photo-1505761671935-60b3a7427bad?auto=format&fit=crop&w=800&q=80' },
+        { id: 'img3', title: 'Portrait', url: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80' },
+        { id: 'img4', title: 'Sunset Coast', url: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80' },
       ].sort(() => 0.5 - Math.random()),
     []
   );
 
-  const videoSamples = React.useMemo(
+  const videoSamples = useMemo<VideoItem[]>(
     () =>
       [
-        { id: 'vid1', title: 'AI 쇼릴', thumb: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80' },
-        { id: 'vid2', title: '모션 그래픽', thumb: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=800&q=80' },
-        { id: 'vid3', title: '퓨처리스틱', thumb: 'https://images.unsplash.com/photo-1481277542470-605612bd2d61?auto=format&fit=crop&w=800&q=80' },
-        { id: 'vid4', title: '시네마틱 룩', thumb: 'https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=800&q=80' },
-        { id: 'vid5', title: '테크 브랜딩', thumb: 'https://images.unsplash.com/photo-1508387024700-9fe5c0b6d09c?auto=format&fit=crop&w=800&q=80' },
+        { id: 'vid1', title: 'AI Journey', thumb: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80' },
+        { id: 'vid2', title: 'Night Drive', thumb: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=800&q=80' },
+        { id: 'vid3', title: 'Future City', thumb: 'https://images.unsplash.com/photo-1481277542470-605612bd2d61?auto=format&fit=crop&w=800&q=80' },
+        { id: 'vid4', title: 'Sea Breeze', thumb: 'https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=800&q=80' },
       ].sort(() => 0.5 - Math.random()),
     []
   );
 
   useEffect(() => {
-    // 기본 진입은 라이트 테마로 강제
+    // 기본 테마는 라이트로 시작
     document.documentElement.classList.remove('dark');
     localStorage.setItem('theme', 'light');
     setTheme('light');
 
-    // 트랙 데이터 불러오기
+    // 음악 트랙
     listTracks()
-      .then((res) => setTracks(res.data.slice(0, 8))) // 최대 8개만 표시
-      .catch((err) => console.error("Failed to fetch tracks", err));
-  }, []);
+      .then((res) => setTracks(res.data.slice(0, 8)))
+      .catch((err) => console.error('Failed to fetch tracks', err));
+
+    // 인기 이미지
+    fetch('/img-api/images/feed/top-24h?limit=4')
+      .then((res) => (res.ok ? res.json() : Promise.reject()))
+      .then((data) => {
+        const items = Array.isArray((data as any)?.items) ? (data as any).items : Array.isArray(data) ? data : [];
+        setPopularImages(
+          items.slice(0, 4).map((it: any) => ({
+            id: String(it.id ?? crypto.randomUUID()),
+            title: it.title ?? it.prompt ?? 'Untitled',
+            url: it.image_url ?? it.url ?? it.cover_url,
+          }))
+        );
+      })
+      .catch(() => setPopularImages(imageSamples.slice(0, 4)));
+
+    // 인기 비디오
+    fetch('/video-api/videos/?limit=4')
+      .then((res) => (res.ok ? res.json() : Promise.reject()))
+      .then((data) => {
+        const items = Array.isArray((data as any)?.items) ? (data as any).items : Array.isArray(data) ? data : [];
+        setPopularVideos(
+          items.slice(0, 4).map((it: any) => ({
+            id: String(it.id ?? crypto.randomUUID()),
+            title: it.title ?? 'Untitled',
+            thumb: it.thumbnail_url ?? it.cover_url ?? it.url,
+          }))
+        );
+      })
+      .catch(() => setPopularVideos(videoSamples.slice(0, 4)));
+  }, [imageSamples, videoSamples]);
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
@@ -76,6 +108,54 @@ const Dashboard: React.FC = () => {
     setActiveFilter(filter);
   };
 
+  const renderPopularImages = () => {
+    const list = popularImages.length ? popularImages : imageSamples.slice(0, 4);
+    return (
+      <div className="content-section">
+        <div className="flex justify-between items-center px-4 pb-3 pt-8">
+          <h2 className="text-2xl font-bold">인기 이미지</h2>
+          <Link to="/image" className="text-sm font-bold text-primary hover:underline">모두 보기</Link>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+          {list.map((img) => (
+            <div key={img.id} className="bg-surface-light dark:bg-surface-dark rounded-lg overflow-hidden aspect-[3/4]">
+              {img.url ? (
+                <img src={img.url} alt={img.title} className="w-full h-full object-cover" loading="lazy" />
+              ) : (
+                <div className="w-full h-full bg-surface-dark/20" />
+              )}
+              <div className="p-2 text-sm font-semibold line-clamp-2">{img.title}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  const renderPopularVideos = () => {
+    const list = popularVideos.length ? popularVideos : videoSamples.slice(0, 4);
+    return (
+      <div className="content-section">
+        <div className="flex justify-between items-center px-4 pb-3 pt-8">
+          <h2 className="text-2xl font-bold">인기 비디오</h2>
+          <Link to="/video" className="text-sm font-bold text-primary hover:underline">모두 보기</Link>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4">
+          {list.map((vid) => (
+            <div key={vid.id} className="bg-surface-light dark:bg-surface-dark rounded-lg overflow-hidden aspect-video">
+              {vid.thumb ? (
+                <img src={vid.thumb} alt={vid.title} className="w-full h-full object-cover" loading="lazy" />
+              ) : (
+                <div className="w-full h-full bg-surface-dark/20" />
+              )}
+              <div className="p-2 text-sm font-semibold line-clamp-2">{vid.title}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-background-light dark:bg-black text-text-light dark:text-text-dark">
       <div className="layout-container flex h-full grow flex-col">
@@ -88,7 +168,7 @@ const Dashboard: React.FC = () => {
               userNickname={user?.nickname}
               onLogout={handleLogout}
               onSearch={(query) => console.log('Search:', query)}
-              onUploadClick={() => navigate('/music/upload')} // Redirect to music upload for now
+              onUploadClick={() => navigate('/music/upload')}
             />
 
             <div className="@container">
@@ -100,7 +180,7 @@ const Dashboard: React.FC = () => {
                         Artlion과 함께하는 AI 창작의 세계
                       </h1>
                       <h2 className="text-base font-normal leading-normal sm:text-lg text-text-muted dark:text-muted-dark">
-                        인공지능이 만든 놀라운 이미지, 음악, 비디오를 발견하고 공유하세요.
+                        마음에 드는 트랙을 재생하고, 큐에 담고, 다운로드까지 한 번에. 로그인 없이도 상세 페이지로 이동할 수 있습니다.
                       </h2>
                     </div>
                     {!isAuthenticated && (
@@ -124,58 +204,23 @@ const Dashboard: React.FC = () => {
             </div>
 
             <div className="flex gap-3 p-4 flex-wrap">
-              <button
-                className={`flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full pl-5 pr-5 cursor-pointer transition-colors ${activeFilter === 'all'
-                  ? 'bg-primary text-background-dark font-bold'
-                  : 'bg-surface-light dark:bg-surface-dark hover:bg-black/5 dark:hover:bg-white/5'
-                  }`}
-                onClick={() => filterContent('all')}
-              >
-                <p className="text-sm">전체</p>
-              </button>
-              <button
-                className={`flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full pl-5 pr-5 cursor-pointer transition-colors ${activeFilter === 'image'
-                  ? 'bg-primary text-background-dark font-bold'
-                  : 'bg-surface-light dark:bg-surface-dark hover:bg-black/5 dark:hover:bg-white/5'
-                  }`}
-                onClick={() => filterContent('image')}
-              >
-                <p className="text-sm">이미지</p>
-              </button>
-              <button
-                className={`flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full pl-5 pr-5 cursor-pointer transition-colors ${activeFilter === 'music'
-                  ? 'bg-primary text-background-dark font-bold'
-                  : 'bg-surface-light dark:bg-surface-dark hover:bg-black/5 dark:hover:bg-white/5'
-                  }`}
-                onClick={() => filterContent('music')}
-              >
-                <p className="text-sm">음악</p>
-              </button>
-              <button
-                className={`flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full pl-5 pr-5 cursor-pointer transition-colors ${activeFilter === 'video'
-                  ? 'bg-primary text-background-dark font-bold'
-                  : 'bg-surface-light dark:bg-surface-dark hover:bg-black/5 dark:hover:bg-white/5'
-                  }`}
-                onClick={() => filterContent('video')}
-              >
-                <p className="text-sm">비디오</p>
-              </button>
+              {(['all', 'image', 'music', 'video'] as const).map((key) => (
+                <button
+                  key={key}
+                  className={`flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full pl-5 pr-5 cursor-pointer transition-colors ${activeFilter === key
+                    ? 'bg-primary text-background-dark font-bold'
+                    : 'bg-surface-light dark:bg-surface-dark hover:bg-black/5 dark:hover:bg-white/5'
+                    }`}
+                  onClick={() => filterContent(key)}
+                >
+                  <p className="text-sm">
+                    {key === 'all' ? '전체' : key === 'image' ? '이미지' : key === 'music' ? '음악' : '비디오'}
+                  </p>
+                </button>
+              ))}
             </div>
 
-            {(activeFilter === 'all' || activeFilter === 'image') && (
-              <div className="content-section">
-                <div className="flex justify-between items-center px-4 pb-3 pt-8">
-                  <h2 className="text-2xl font-bold">인기 이미지</h2>
-                  <button className="text-sm font-bold text-primary hover:underline">모두 보기</button>
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
-                  <div className="bg-surface-light dark:bg-surface-dark rounded-lg aspect-[3/4]"></div>
-                  <div className="bg-surface-light dark:bg-surface-dark rounded-lg aspect-[3/4]"></div>
-                  <div className="bg-surface-light dark:bg-surface-dark rounded-lg aspect-[3/4]"></div>
-                  <div className="bg-surface-light dark:bg-surface-dark rounded-lg aspect-[3/4]"></div>
-                </div>
-              </div>
-            )}
+            {(activeFilter === 'all' || activeFilter === 'image') && renderPopularImages()}
 
             {(activeFilter === 'all' || activeFilter === 'music') && (
               <div className="content-section">
@@ -184,13 +229,11 @@ const Dashboard: React.FC = () => {
                   <Link to="/music" className="text-sm font-bold text-primary hover:underline">모두 보기</Link>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
-                  {tracks.length === 0 ? (
-                    // Loading Skeletons
-                    Array.from({ length: 4 }).map((_, idx) => (
-                      <div key={idx} className="bg-surface-light dark:bg-surface-dark rounded-lg aspect-square animate-pulse"></div>
+                  {tracks.length === 0
+                    ? Array.from({ length: 4 }).map((_, idx) => (
+                      <div key={idx} className="bg-surface-light dark:bg-surface-dark rounded-lg aspect-square animate-pulse" />
                     ))
-                  ) : (
-                    tracks.map((track) => (
+                    : tracks.map((track) => (
                       <Link
                         key={track.id}
                         to={`/music/tracks/${track.id}`}
@@ -202,6 +245,7 @@ const Dashboard: React.FC = () => {
                               src={buildCoverUrl(track.id)}
                               alt={track.title}
                               className="w-full h-full object-cover"
+                              loading="lazy"
                             />
                           ) : (
                             <div className="w-full h-full bg-gradient-to-br from-surface-dark/60 to-surface-dark/20" />
@@ -222,25 +266,12 @@ const Dashboard: React.FC = () => {
                           <p className="text-xs text-muted-light line-clamp-1">{track.ai_provider} · {track.ai_model}</p>
                         </div>
                       </Link>
-                    ))
-                  )}
+                    ))}
                 </div>
               </div>
             )}
 
-            {(activeFilter === 'all' || activeFilter === 'video') && (
-              <div className="content-section">
-                <div className="flex justify-between items-center px-4 pb-3 pt-8">
-                  <h2 className="text-2xl font-bold">인기 비디오</h2>
-                  <Link to="/video" className="text-sm font-bold text-primary hover:underline">모두 보기</Link>
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4">
-                  <div className="bg-surface-light dark:bg-surface-dark rounded-lg aspect-video"></div>
-                  <div className="bg-surface-light dark:bg-surface-dark rounded-lg aspect-video"></div>
-                  <div className="bg-surface-light dark:bg-surface-dark rounded-lg aspect-video"></div>
-                </div>
-              </div>
-            )}
+            {(activeFilter === 'all' || activeFilter === 'video') && renderPopularVideos()}
           </div>
         </div>
 

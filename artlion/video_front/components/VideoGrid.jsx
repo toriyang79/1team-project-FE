@@ -1,0 +1,177 @@
+import React, { useState, useEffect } from 'react';
+import { videoAPI } from '../services/api';
+import VideoPlayer from './VideoPlayer';
+import DeleteConfirmModal from './DeleteConfirmModal';
+import EditModal from './EditModal';
+import '../styles/VideoGrid.css';
+
+const VideoGrid = ({ refreshTrigger, searchQuery, onVideoSelect }) => {
+  const [videos, setVideos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+
+  // Delete modal state
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [videoToDelete, setVideoToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Edit modal state
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [videoToEdit, setVideoToEdit] = useState(null);
+
+  useEffect(() => {
+    fetchVideos();
+  }, [refreshTrigger, searchQuery]);
+
+  const fetchVideos = async () => {
+    try {
+      setLoading(true);
+      let data;
+
+      if (searchQuery && searchQuery.trim() !== '') {
+        // Search mode
+        data = await videoAPI.searchVideos(searchQuery, 0, 50);
+      } else {
+        // Normal mode - get all videos
+        data = await videoAPI.getVideos(0, 50);
+      }
+
+      setVideos(data.videos || []);
+      setError(null);
+    } catch (err) {
+      setError('Failed to load videos. Please try again later.');
+      console.error('Error fetching videos:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleScroll = (e) => {
+    const container = e.target;
+    const scrollPosition = container.scrollTop;
+    const videoHeight = container.clientHeight;
+    const newIndex = Math.round(scrollPosition / videoHeight);
+
+    if (newIndex !== currentVideoIndex && newIndex < videos.length) {
+      setCurrentVideoIndex(newIndex);
+    }
+  };
+
+  // Delete handlers
+  const handleDeleteClick = (video) => {
+    setVideoToDelete(video);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!videoToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      await videoAPI.deleteVideo(videoToDelete.id);
+      // Remove from local state
+      setVideos(videos.filter(v => v.id !== videoToDelete.id));
+      setDeleteModalOpen(false);
+      setVideoToDelete(null);
+    } catch (err) {
+      console.error('Error deleting video:', err);
+      alert('삭제 중 오류가 발생했습니다.');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteModalOpen(false);
+    setVideoToDelete(null);
+  };
+
+  // Edit handlers
+  const handleEditClick = (video) => {
+    setVideoToEdit(video);
+    setEditModalOpen(true);
+  };
+
+  const handleEditSuccess = (updatedVideo) => {
+    // Update local state
+    setVideos(videos.map(v => v.id === updatedVideo.id ? updatedVideo : v));
+    setEditModalOpen(false);
+    setVideoToEdit(null);
+  };
+
+  const handleEditCancel = () => {
+    setEditModalOpen(false);
+    setVideoToEdit(null);
+  };
+
+  if (loading) {
+    return (
+      <div className="video-grid-loading">
+        <div className="spinner"></div>
+        <p>Loading videos...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="video-grid-error">
+        <span className="material-symbols-outlined">error</span>
+        <p>{error}</p>
+        <button onClick={fetchVideos} className="retry-button">
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  if (videos.length === 0) {
+    return (
+      <div className="video-grid-empty">
+        <span className="material-symbols-outlined">
+          {searchQuery ? 'search_off' : 'video_library'}
+        </span>
+        <p>
+          {searchQuery
+            ? `"${searchQuery}"에 대한 검색 결과가 없습니다`
+            : 'No videos available'}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="video-grid-container" onScroll={handleScroll}>
+        {videos.map((video, index) => (
+          <div key={video.id} className="video-grid-item">
+            <VideoPlayer
+              video={video}
+              onDelete={handleDeleteClick}
+              onEdit={handleEditClick}
+              onSelect={onVideoSelect}
+            />
+          </div>
+        ))}
+      </div>
+
+      <DeleteConfirmModal
+        isOpen={deleteModalOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        videoName={videoToDelete?.original_filename}
+        isDeleting={isDeleting}
+      />
+
+      <EditModal
+        isOpen={editModalOpen}
+        onClose={handleEditCancel}
+        video={videoToEdit}
+        onEditSuccess={handleEditSuccess}
+      />
+    </>
+  );
+};
+
+export default VideoGrid;

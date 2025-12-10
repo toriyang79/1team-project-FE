@@ -1,0 +1,196 @@
+.video-player-container {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.video-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  background-color: #000;
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.video-element {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.play-button {
+  pointer-events: all;
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.play-button:hover {
+  background: rgba(0, 0, 0, 0.7);
+  transform: scale(1.1);
+}
+
+.play-button .material-symbols-outlined {
+  font-size: 60px;
+  color: white;
+}
+
+.video-info {
+  padding: 1rem 0;
+}
+
+.video-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+body.light .video-title {
+  color: var(--text-light);
+}
+
+body.dark .video-title {
+  color: var(--text-dark);
+}
+
+.video-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+}
+
+body.light .video-meta {
+  color: var(--muted-light);
+}
+
+body.dark .video-meta {
+  color: var(--muted-dark);
+}
+
+.video-size,
+.video-date {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.video-actions {
+  display: flex;
+  gap: 0.25rem;
+  margin-left: auto;
+}
+
+.action-btn {
+  min-width: 28px;
+  height: 28px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0 0.5rem;
+  transition: all 0.2s ease;
+}
+
+body.light .action-btn {
+  background-color: var(--surface-light);
+  color: var(--text-light);
+}
+
+body.dark .action-btn {
+  background-color: var(--surface-dark);
+  color: var(--text-dark);
+}
+
+.action-btn:hover {
+  transform: scale(1.05);
+}
+
+.action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.action-btn .material-symbols-outlined {
+  font-size: 16px;
+}
+
+.like-count {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.like-btn {
+  transition: all 0.3s ease;
+}
+
+.like-btn.liked {
+  color: #ef4444;
+}
+
+body.light .like-btn.liked {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+body.dark .like-btn.liked {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.like-btn:hover {
+  color: #ef4444;
+}
+
+body.light .like-btn:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+body.dark .like-btn:hover {
+  background-color: rgba(239, 68, 68, 0.2);
+}
+
+.edit-btn:hover {
+  background-color: var(--primary);
+  color: var(--background-dark);
+}
+
+.delete-btn:hover {
+  background-color: #ef4444;
+  color: white;
+}
+
+.click-interceptor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  cursor: pointer;
+  z-index: 1; /* Sit on top of the video controls */
+}

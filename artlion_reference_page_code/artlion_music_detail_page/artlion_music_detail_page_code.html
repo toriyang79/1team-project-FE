@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Artlion - Music Detail</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#eead2b",
+              "background-light": "#fcfaf8",
+              "background-dark": "#221c10",
+              "text-light": "#1b170d",
+              "text-dark": "#f3efe7",
+              "surface-light": "#f3efe7",
+              "surface-dark": "#3a3222",
+              "muted-light": "#9a804c",
+              "muted-dark": "#9a804c",
+            },
+            fontFamily: {
+              display: ["Spline Sans", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.75rem",
+              lg: "1rem",
+              xl: "1.5rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+      }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-light dark:text-text-dark">
+<div class="relative flex min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<div class="px-4 sm:px-8 md:px-16 lg:px-24 xl:px-40 flex flex-1 justify-center py-5">
+<div class="layout-content-container flex flex-col w-full max-w-6xl flex-1">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-surface-light dark:border-surface-dark/20 px-4 py-3">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3 text-text-light dark:text-text-dark">
+<div class="size-6 text-primary">
+<svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M12.0799 24L4 19.2479L9.95537 8.75216L18.04 13.4961L18.0446 4H29.9554L29.96 13.4961L38.0446 8.75216L44 19.2479L35.92 24L44 28.7521L38.0446 39.2479L29.96 34.5039L29.9554 44H18.0446L18.04 34.5039L9.95537 39.2479L4 28.7521L12.0799 24Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<h2 class="text-xl font-bold leading-tight tracking-[-0.015em]">Artlion</h2>
+</div>
+<nav class="hidden md:flex items-center gap-9">
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Explore</a>
+<a class="text-sm font-medium leading-normal text-primary" href="#">Music</a>
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">About</a>
+</nav>
+</div>
+<div class="flex flex-1 justify-end items-center gap-4">
+<label class="hidden sm:flex flex-col min-w-40 !h-10 max-w-64">
+<div class="flex w-full flex-1 items-stretch rounded-full h-full">
+<div class="text-muted-light dark:text-muted-dark flex bg-surface-light dark:bg-surface-dark items-center justify-center pl-4 rounded-l-full border-r-0">
+<span class="material-symbols-outlined text-xl">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-full text-text-light dark:text-text-dark focus:outline-0 focus:ring-0 border-none bg-surface-light dark:bg-surface-dark h-full placeholder:text-muted-light dark:placeholder:text-muted-dark px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal" placeholder="Search" value=""/>
+</div>
+</label>
+<div class="flex gap-2">
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-primary text-text-light text-sm font-bold leading-normal tracking-[0.015em] hover:opacity-90 transition-opacity">
+<span class="truncate">Upload</span>
+</button>
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-surface-light dark:bg-surface-dark text-text-light dark:text-text-dark text-sm font-bold leading-normal tracking-[0.015em] hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+<span class="truncate">Log In</span>
+</button>
+</div>
+</div>
+</header>
+<main class="flex-1 py-10 md:py-16">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+<div class="lg:col-span-2 flex flex-col gap-8">
+<div class="flex flex-col sm:flex-row gap-6 bg-surface-light dark:bg-surface-dark p-6 rounded-xl">
+<div class="w-full sm:w-48 sm:h-48 aspect-square bg-cover bg-center rounded-lg" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAYXgxd-2JDtbTxe7_zVfVODwLJpR9QNAwCHPeiTcxdNrQXPQgUHeQYgeue03VaPiFH6JelOPPQYSpHlSfUDJnC5PsWzWvH41XJk55w5ouo3M3YwU3d--yw-j0JJ6COPN26T83MRJDbEW456fT52nT1qbNf_EzS1QiPFNrQFukiZ0XVuaKyQvBgFQATR8Xw-FLEFJNyxHPsWRbHZZtVqBwI4m-UX-_SAIlQGTVM58vvvVhvuxR8jaeFyAAfwlGibGiwX58nqdx-9NI3");'></div>
+<div class="flex-1 flex flex-col justify-between gap-4">
+<div>
+<h1 class="text-3xl font-bold">Echoes of Nebula</h1>
+<p class="text-lg text-muted-light dark:text-muted-dark">by Synthwave AI</p>
+</div>
+<div class="flex flex-col gap-2">
+<div class="w-full h-2 bg-muted-light/20 rounded-full">
+<div class="w-2/3 h-2 bg-primary rounded-full"></div>
+</div>
+<div class="flex justify-between text-sm text-muted-light dark:text-muted-dark">
+<span>2:34</span>
+<span>3:51</span>
+</div>
+</div>
+<div class="flex items-center gap-4 text-text-light dark:text-text-dark">
+<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined text-3xl">skip_previous</span></button>
+<button class="w-14 h-14 flex items-center justify-center bg-primary rounded-full text-text-light hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-5xl -mr-1">play_arrow</span>
+</button>
+<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined text-3xl">skip_next</span></button>
+<div class="flex-1 flex justify-end items-center gap-2">
+<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined">volume_up</span></button>
+<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined">repeat</span></button>
+<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined">shuffle</span></button>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-6">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 bg-cover bg-center rounded-full" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDz3O8STqqVtl6t5BoAeie9ns_xWx68Jp69NFfd7JMR44RjJRLW4u-o3O-t4LOPGgMiU0MPnykXo-JpsJkQUeYfa1j3E26ablzKSuiqBuzUTNAQU_WwyLjTDvR6WUaXQCTwgUhH-DQ33y3WbWB7fGweM0fhj6jKQZLsI2ycAtGZgLAx7K-Fo3wnbpZkaERRed_FWuJju7oUP6Ka33l6vQA3KR8X1pvVFDzbLSE4h6dwOYnorgmxDj07e3YqrBZV8oSuySCiVWF4KJJr")'></div>
+<div>
+<p class="font-bold">Synthwave AI</p>
+<p class="text-sm text-muted-light dark:text-muted-dark">12.3k Followers</p>
+</div>
+</div>
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-primary text-text-light text-sm font-bold leading-normal tracking-[0.015em] hover:opacity-90 transition-opacity">
+<span class="truncate">Follow</span>
+</button>
+</div>
+<div class="p-6 bg-surface-light dark:bg-surface-dark rounded-xl">
+<div class="flex items-center gap-2 text-muted-light dark:text-muted-dark mb-4">
+<span class="text-sm">Genre: Synthwave</span>
+<span class="text-sm">·</span>
+<span class="text-sm">Uploaded 2 days ago</span>
+</div>
+<p class="text-text-light dark:text-text-dark">
+                        'Echoes of Nebula' is a journey through neon-lit cosmic highways. A retro-futuristic soundscape generated by advanced AI algorithms, capturing the essence of 80s sci-fi dreams. Perfect for late-night drives or coding sessions in the matrix.
+                      </p>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-2 px-4 h-10 rounded-full bg-surface-light dark:bg-surface-dark hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1">favorite</span>
+<span class="font-medium text-sm">1.8k</span>
+</button>
+<button class="flex items-center gap-2 px-4 h-10 rounded-full bg-surface-light dark:bg-surface-dark hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined text-xl">share</span>
+<span class="font-medium text-sm">Share</span>
+</button>
+<button class="flex items-center gap-2 px-4 h-10 rounded-full bg-surface-light dark:bg-surface-dark hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined text-xl">playlist_add</span>
+<span class="font-medium text-sm">Add to playlist</span>
+</button>
+</div>
+</div>
+<div class="flex flex-col gap-6">
+<h2 class="text-2xl font-bold leading-tight tracking-[-0.015em]">Comments (24)</h2>
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 bg-cover bg-center rounded-full shrink-0" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDz3O8STqqVtl6t5BoAeie9ns_xWx68Jp69NFfd7JMR44RjJRLW4u-o3O-t4LOPGgMiU0MPnykXo-JpsJkQUeYfa1j3E26ablzKSuiqBuzUTNAQU_WwyLjTDvR6WUaXQCTwgUhH-DQ33y3WbWB7fGweM0fhj6jKQZLsI2ycAtGZgLAx7K-Fo3wnbpZkaERRed_FWuJju7oUP6Ka33l6vQA3KR8X1pvVFDzbLSE4h6dwOYnorgmxDj07e3YqrBZV8oSuySCiVWF4KJJr")'></div>
+<textarea class="form-textarea w-full min-h-24 resize-none rounded-lg text-text-light dark:text-text-dark focus:outline-0 focus:ring-2 focus:ring-primary border-none bg-surface-light dark:bg-surface-dark placeholder:text-muted-light dark:placeholder:text-muted-dark text-base font-normal" placeholder="Add a comment..."></textarea>
+</div>
+<div class="flex flex-col gap-6">
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 bg-cover bg-center rounded-full shrink-0" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDz3O8STqqVtl6t5BoAeie9ns_xWx68Jp69NFfd7JMR44RjJRLW4u-o3O-t4LOPGgMiU0MPnykXo-JpsJkQUeYfa1j3E26ablzKSuiqBuzUTNAQU_WwyLjTDvR6WUaXQCTwgUhH-DQ33y3WbWB7fGweM0fhj6jKQZLsI2ycAtGZgLAx7K-Fo3wnbpZkaERRed_FWuJju7oUP6Ka33l6vQA3KR8X1pvVFDzbLSE4h6dwOYnorgmxDj07e3YqrBZV8oSuySCiVWF4KJJr")'></div>
+<div class="flex-1">
+<p class="font-bold text-sm">Alex Johnson <span class="text-muted-light dark:text-muted-dark font-normal ml-2">1 day ago</span></p>
+<p>This is pure fire! The AI captured the retro vibe perfectly. Sounds like it came straight out of Blade Runner.</p>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 bg-cover bg-center rounded-full shrink-0" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDz3O8STqqVtl6t5BoAeie9ns_xWx68Jp69NFfd7JMR44RjJRLW4u-o3O-t4LOPGgMiU0MPnykXo-JpsJkQUeYfa1j3E26ablzKSuiqBuzUTNAQU_WwyLjTDvR6WUaXQCTwgUhH-DQ33y3WbWB7fGweM0fhj6jKQZLsI2ycAtGZgLAx7K-Fo3wnbpZkaERRed_FWuJju7oUP6Ka33l6vQA3KR8X1pvVFDzbLSE4h6dwOYnorgmxDj07e3YqrBZV8oSuySCiVWF4KJJr")'></div>
+<div class="flex-1">
+<p class="font-bold text-sm">CyberDreamer <span class="text-muted-light dark:text-muted-dark font-normal ml-2">2 days ago</span></p>
+<p>Incredible composition. The layers and synths are just... wow. What prompts were used for this?</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="lg:col-span-1 flex flex-col gap-6">
+<h2 class="text-2xl font-bold leading-tight tracking-[-0.015em]">Similar Music</h2>
+<div class="flex flex-col gap-5">
+<div class="flex items-center gap-4 group cursor-pointer">
+<div class="w-20 h-20 bg-cover bg-center rounded-lg shrink-0" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBxJcwizPavdnIzyTKNEkhVQmm86kwRTxmD8P3ukgXKnfpK4Ig_laRN4Bjh58I2PsvpL8SEvRVwMKPDA58y7N3EUHOBLERR7puX-VGXrKR4EII5GhPpW9b7r3JmuOFk8Y6NyePLNPG6DE5tih7JPBg1YJpUUp0WvTljiyCmUSINW240JuOyYZsR9lhvI71TdVLgUmZ3ps7zmJq1AGFAZAui2-YdGuVTkN0TPLomk88IXtrXqGTCQYDacD1QJIEwiTJ40T16ANCvAUi8");'></div>
+<div class="flex-1">
+<p class="font-bold group-hover:text-primary transition-colors">Forest Lullaby</p>
+<p class="text-sm text-muted-light dark:text-muted-dark">Ambient Bot</p>
+</div>
+<span class="material-symbols-outlined text-3xl text-muted-light dark:text-muted-dark group-hover:text-primary transition-colors">play_circle</span>
+</div>
+<div class="flex items-center gap-4 group cursor-pointer">
+<div class="w-20 h-20 bg-cover bg-center rounded-lg shrink-0" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCOrEPoa91U7rgYBmiHg6ekAFBbSLhn2M7fGZS_VYpey6PPLVP7aVkT9gIoFyFyAn6uoEDfMUUuyUvILOiOOaDC6o6zKVJTDiOCZKxUK5dhKwdE_Pj9jocu1TNAqkkR-XRQlWD7b0MIL92P-SAR4w8-ctRGVBUDhBr7mUMF0Iqz9_QzM1q86HMmkWH9cLHz725oba-Wmtr3lYQlZ5CvRjfOA9DRr4sIke70HJ6bLiEm6xg9SvpW1CP0zK-zR1WVde-Xbcri4i6bCGlu");'></div>
+<div class="flex-1">
+<p class="font-bold group-hover:text-primary transition-colors">Chrome Dreams</p>
+<p class="text-sm text-muted-light dark:text-muted-dark">Cyberfunk Gen</p>
+</div>
+<span class="material-symbols-outlined text-3xl text-muted-light dark:text-muted-dark group-hover:text-primary transition-colors">play_circle</span>
+</div>
+<div class="flex items-center gap-4 group cursor-pointer">
+<div class="w-20 h-20 bg-cover bg-center rounded-lg shrink-0" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDrQjam9lNkWVwuH10nb5SmYWiHkdJRbVmIXYi-aRsSdhqZx6GagAio-J8Me3e4jAY0L3B69OIBvUDtuTFqQPgaUbKhS1yAI0JJM63ah-4B2RhbMvOOMj55bqh3ctfrlL6eK2vpviAmTRmNBEBUnX9NpRcV6R8K5gAyQf5JdV2ASqN9MQ67UVtI0vRGV3zWHSgzPIXY9Dl8gknxnfdU36czufje54l8pIFpEJYhbe0t64LAgGiiTx8fQul2tLp1OrJtvv3jrl-sFckU");'></div>
+<div class="flex-1">
+<p class="font-bold group-hover:text-primary transition-colors">Solar Flare</p>
+<p class="text-sm text-muted-light dark:text-muted-dark">Orchestral AI</p>
+</div>
+<span class="material-symbols-outlined text-3xl text-muted-light dark:text-muted-dark group-hover:text-primary transition-colors">play_circle</span>
+</div>
+<div class="flex items-center gap-4 group cursor-pointer">
+<div class="w-20 h-20 bg-cover bg-center rounded-lg shrink-0" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDz3O8STqqVtl6t5BoAeie9ns_xWx68Jp69NFfd7JMR44RjJRLW4u-o3O-t4LOPGgMiU0MPnykXo-JpsJkQUeYfa1j3E26ablzKSuiqBuzUTNAQU_WwyLjTDvR6WUaXQCTwgUhH-DQ33y3WbWB7fGweM0fhj6jKQZLsI2ycAtGZgLAx7K-Fo3wnbpZkaERRed_FWuJju7oUP6Ka33l6vQA3KR8X1pvVFDzbLSE4h6dwOYnorgmxDj07e3YqrBZV8oSuySCiVWF4KJJr")'></div>
+<div class="flex-1">
+<p class="font-bold group-hover:text-primary transition-colors">Quantum Grooves</p>
+<p class="text-sm text-muted-light dark:text-muted-dark">Stardust AI</p>
+</div>
+<span class="material-symbols-outlined text-3xl text-muted-light dark:text-muted-dark group-hover:text-primary transition-colors">play_circle</span>
+</div>
+<div class="flex items-center gap-4 group cursor-pointer">
+<div class="w-20 h-20 bg-cover bg-center rounded-lg shrink-0" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDz3O8STqqVtl6t5BoAeie9ns_xWx68Jp69NFfd7JMR44RjJRLW4u-o3O-t4LOPGgMiU0MPnykXo-JpsJkQUeYfa1j3E26ablzKSuiqBuzUTNAQU_WwyLjTDvR6WUaXQCTwgUhH-DQ33y3WbWB7fGweM0fhj6jKQZLsI2ycAtGZgLAx7K-Fo3wnbpZkaERRed_FWuJju7oUP6Ka33l6vQA3KR8X1pvVFDzbLSE4h6dwOYnorgmxDj07e3YqrBZV8oSuySCiVWF4KJJr")'></div>
+<div class="flex-1">
+<p class="font-bold group-hover:text-primary transition-colors">Glitch in the Meadow</p>
+<p class="text-sm text-muted-light dark:text-muted-dark">Lo-fi Bot</p>
+</div>
+<span class="material-symbols-outlined text-3xl text-muted-light dark:text-muted-dark group-hover:text-primary transition-colors">play_circle</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="mt-16 border-t border-solid border-surface-light dark:border-surface-dark/20 py-8 px-4 text-center text-muted-light dark:text-muted-dark">
+<div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+<p class="text-sm">© 2024 Artlion. All rights reserved.</p>
+<div class="flex gap-6 text-sm">
+<a class="hover:text-primary transition-colors" href="#">About Us</a>
+<a class="hover:text-primary transition-colors" href="#">Contact</a>
+<a class="hover:text-primary transition-colors" href="#">Terms of Service</a>
+</div>
+</div>
+</footer>
+</div>
+</div>
+</div>
+</div>
+
+</body></html>

@@ -15,6 +15,31 @@ const Dashboard: React.FC = () => {
   const [tracks, setTracks] = useState<Track[]>([]);
   const { play } = usePlayer();
 
+  // 샘플 인기 이미지/비디오 (랜덤 셔플)
+  const imageSamples = React.useMemo(
+    () =>
+      [
+        { id: 'img1', title: '우주의 바다', url: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80' },
+        { id: 'img2', title: '사이버네틱 숲', url: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=800&q=80' },
+        { id: 'img3', title: '스팀펑크 도시', url: 'https://images.unsplash.com/photo-1505761671935-60b3a7427bad?auto=format&fit=crop&w=800&q=80' },
+        { id: 'img4', title: '꿈꾸는 초상', url: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80' },
+        { id: 'img5', title: '네온 거리', url: 'https://images.unsplash.com/photo-1508057198894-247b23fe5ade?auto=format&fit=crop&w=800&q=80' },
+      ].sort(() => 0.5 - Math.random()),
+    []
+  );
+
+  const videoSamples = React.useMemo(
+    () =>
+      [
+        { id: 'vid1', title: 'AI 쇼릴', thumb: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80' },
+        { id: 'vid2', title: '모션 그래픽', thumb: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=800&q=80' },
+        { id: 'vid3', title: '퓨처리스틱', thumb: 'https://images.unsplash.com/photo-1481277542470-605612bd2d61?auto=format&fit=crop&w=800&q=80' },
+        { id: 'vid4', title: '시네마틱 룩', thumb: 'https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=800&q=80' },
+        { id: 'vid5', title: '테크 브랜딩', thumb: 'https://images.unsplash.com/photo-1508387024700-9fe5c0b6d09c?auto=format&fit=crop&w=800&q=80' },
+      ].sort(() => 0.5 - Math.random()),
+    []
+  );
+
   useEffect(() => {
     // 기본 진입은 라이트 테마로 강제
     document.documentElement.classList.remove('dark');

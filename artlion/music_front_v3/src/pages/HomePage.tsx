@@ -80,7 +80,7 @@ const HomePage = () => {
       </div>
       <div className="flex-1 min-w-0 flex flex-col gap-1">
         <span className="text-xs text-primary font-semibold">{label}</span>
-        <Link to={`/tracks/${track.id}`} className="font-bold text-sm line-clamp-2 hover:text-primary transition-colors">
+        <Link to={`tracks/${track.id}`} className="font-bold text-sm line-clamp-2 hover:text-primary transition-colors">
           {track.title}
         </Link>
         {getMetaText(track) && <p className="text-xs text-muted-light line-clamp-1">{getMetaText(track)}</p>}
@@ -138,7 +138,7 @@ const HomePage = () => {
                 className="bg-surface-light dark:bg-surface-dark rounded-xl p-4 flex flex-col gap-2 shadow-sm hover:-translate-y-1 transition-transform w-full max-w-[240px]"
               >
                 <div className="relative aspect-square rounded-lg bg-surface-dark/10 overflow-hidden">
-                  <Link to={`/tracks/${track.id}`} className="absolute inset-0 z-0">
+                  <Link to={`tracks/${track.id}`} className="absolute inset-0 z-0">
                     {track.cover_url ? (
                       <img
                         src={buildCoverUrl(track.id)}
@@ -158,7 +158,7 @@ const HomePage = () => {
                   </button>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <Link to={`/tracks/${track.id}`} className="group">
+                  <Link to={`tracks/${track.id}`} className="group">
                     <h4 className="font-bold line-clamp-2 group-hover:text-primary transition-colors">{track.title}</h4>
                   </Link>
                   {getMetaText(track) && (

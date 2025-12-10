@@ -33,3 +33,7 @@ dist-ssr
 # Test / coverage
 coverage
 .nyc_output
+
+# Local reference folders (do not commit)
+reference_music_front/
+artlion_first_main_page/

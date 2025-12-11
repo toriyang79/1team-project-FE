@@ -17,12 +17,14 @@ const PlayerBar = () => {
   const [liked, setLiked] = useState(false);
   const [likes, setLikes] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
     if (!current) return;
     setLiked(false);
     setLikes(current.likes_count ?? 0);
     setMenuOpen(false);
+    setVisible(true);
   }, [current]);
 
   const coverSrc = useMemo(() => {
@@ -32,6 +34,13 @@ const PlayerBar = () => {
 
   const downloadUrl = useMemo(() => (current ? buildMediaUrl(`/tracks/${current.id}/stream`) : ""), [current]);
   const shareUrl = useMemo(() => (current ? `${window.location.origin}/tracks/${current.id}` : ""), [current]);
+
+  // 플레이가 다시 시작되면(같은 트랙이어도) 바를 자동으로 표시
+  useEffect(() => {
+    if (current && isPlaying) {
+      setVisible(true);
+    }
+  }, [current, isPlaying]);
 
   if (!current) return null;
 
@@ -98,8 +107,22 @@ const PlayerBar = () => {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur border-t border-surface-dark/10 shadow-lg px-3 py-3 md:px-6 text-gray-900 dark:text-gray-100">
+    <div
+      className={`fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur border-t border-surface-dark/10 shadow-lg px-3 py-3 md:px-6 text-gray-900 dark:text-gray-100 ${visible ? "" : "hidden"}`}
+    >
       <div className="flex flex-col gap-3 relative max-w-6xl mx-auto w-full">
+        <button
+          onClick={() => {
+            setVisible(false);
+            if (isPlaying) toggle();
+          }}
+          style={{ right: "-4rem" }}
+          className="absolute -top-2 md:-top-3 p-2 rounded-full bg-primary text-white shadow-md hover:opacity-90 transition-opacity z-10"
+          aria-label="플레이어 닫기"
+        >
+          <span className="material-symbols-outlined text-base">close</span>
+        </button>
+
         <div className="flex flex-col gap-3 md:flex-row md:flex-nowrap md:items-center md:gap-6 md:justify-between">
           <div className="flex items-center gap-3 min-w-0 flex-shrink-0">
             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg overflow-hidden bg-surface-dark/10 flex-shrink-0">
@@ -112,7 +135,7 @@ const PlayerBar = () => {
             <div className="min-w-0">
               <p className="font-bold text-sm truncate text-gray-900 dark:text-gray-100">{current.title}</p>
               <p className="text-xs text-muted-light dark:text-gray-300 truncate">
-                {current.ai_provider} � {current.ai_model}
+                {current.ai_provider} · {current.ai_model}
               </p>
             </div>
           </div>
@@ -248,5 +271,3 @@ const PlayerBar = () => {
 };
 
 export default PlayerBar;
-
-

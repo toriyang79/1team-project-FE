@@ -17,7 +17,8 @@ api.interceptors.request.use((config) => {
       }
     }
   } catch (error) {
-    console.warn('토큰 로드 실패:', error?.message);
+    const errMsg = error instanceof Error ? error.message : String(error);
+    console.warn('토큰 로드 실패:', errMsg);
   }
   return config;
 });

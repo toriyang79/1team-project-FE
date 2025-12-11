@@ -19,6 +19,9 @@ const Dashboard: React.FC = () => {
   const [popularImages, setPopularImages] = useState<ImageItem[]>([]);
   const [popularVideos, setPopularVideos] = useState<VideoItem[]>([]);
   const { play } = usePlayer();
+  const isLocalhost = typeof window !== 'undefined' && window.location.origin.includes('localhost');
+  const videoApiBase = (import.meta.env.VITE_VIDEO_API_URL || '').trim() || (isLocalhost ? '/video-api' : 'https://shorts-artlion.duckdns.org/api');
+  const buildVideoUrl = (path: string) => `${videoApiBase.replace(/\/$/, '')}${path}`;
 
   const imageSamples = useMemo<ImageItem[]>(
     () =>
@@ -75,7 +78,7 @@ const Dashboard: React.FC = () => {
       .catch(() => setPopularImages(imageSamples.slice(0, 4)));
 
     // 인기 비디오
-    fetch('/video-api/videos/?limit=4')
+    fetch(buildVideoUrl('/videos/?limit=4'))
       .then((res) => (res.ok ? res.json() : Promise.reject()))
       .then((data) => {
         const items = Array.isArray((data as any)?.items) ? (data as any).items : Array.isArray(data) ? data : [];

@@ -5,6 +5,16 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
+    host: '0.0.0.0',
+    allowedHosts: [
+      'www.artlion.p-e.kr',
+      'www.genbox.kro.kr',
+      'shorts-artlion.duckdns.org',
+      'localhost',
+      '.p-e.kr',
+      '.kro.kr',
+      '.duckdns.org'
+    ],
     proxy: {
 
       '/api': {

@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  artlion-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: artlion-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=/api/v1
+      - VITE_MUSIC_API_BASE_URL=/music-api
+      - VITE_MUSIC_MEDIA_BASE_URL=https://www.genbox.kro.kr/api
+      - VITE_MUSIC_DEV_USER_ID=1
+      - VITE_VIDEO_API_URL=https://shorts-artlion.duckdns.org
+      - REACT_APP_VIDEO_API_URL=/video-api
+      - REACT_APP_IMG_API_BASE_URL=/img-api
+      - REACT_APP_IMG_MEDIA_BASE_URL=http://13.125.57.129:8000
+    networks:
+      - artlion-network
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+
+networks:
+  artlion-network:
+    driver: bridge

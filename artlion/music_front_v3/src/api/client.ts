@@ -15,8 +15,6 @@ api.interceptors.request.use((config) => {
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
-      // 임시 개발용 사용자 헤더
-      config.headers['X-User-Id'] = '6';
     }
   } catch (error) {
     console.warn('토큰 로드 실패:', error?.message);

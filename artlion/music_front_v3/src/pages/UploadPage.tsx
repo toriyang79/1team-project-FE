@@ -2,10 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { parseBlob } from "music-metadata-browser";
 import { Buffer } from "buffer";
-
 import { createTrack } from "../api/tracks";
 
-// music-metadata-browser는 브라우저에서도 Buffer가 필요하다.
 if (typeof (globalThis as any).Buffer === "undefined") {
   (globalThis as any).Buffer = Buffer;
 }
@@ -40,8 +38,6 @@ const UploadPage = () => {
 
   const audioInputRef = useRef<HTMLInputElement | null>(null);
   const coverInputRef = useRef<HTMLInputElement | null>(null);
-  // dev 강제 사용자 주입 제거
-  const devUserId = undefined as string | undefined;
 
   useEffect(() => {
     return () => {
@@ -70,7 +66,7 @@ const UploadPage = () => {
 
   const validateAudio = (file: File) => {
     if (file.size > MAX_AUDIO_MB * 1024 * 1024) {
-      throw new Error(`음원은 ${MAX_AUDIO_MB}MB 이하만 업로드할 수 있습니다.`);
+      throw new Error(`오디오 파일은 ${MAX_AUDIO_MB}MB 이하만 업로드할 수 있습니다.`);
     }
     if (file.type && !ALLOWED_AUDIO_TYPES.includes(file.type)) {
       throw new Error("MP3 / WAV / FLAC 형식만 지원합니다.");
@@ -87,7 +83,6 @@ const UploadPage = () => {
     }
   };
 
-  // 오디오에 내장된 커버를 추출해 cover_file로 전송할 준비를 한다.
   const extractEmbeddedCover = async (file: File) => {
     try {
       const metadata = await parseBlob(file);
@@ -104,10 +99,10 @@ const UploadPage = () => {
           return previewUrl;
         });
         setCoverFile(fileFromAudio);
-        setCoverName("내장 이미지");
+        setCoverName("오디오에서 추출한 커버");
       }
     } catch (err) {
-      console.warn("내장 커버 추출 실패", err);
+      console.warn("임베딩 커버 추출 실패", err);
     }
   };
 
@@ -121,7 +116,6 @@ const UploadPage = () => {
     setAudioFile(file);
     setAudioName(file.name);
     setTitleFromFile(file);
-    // 사용자가 직접 커버를 선택하지 않았다면 내장 커버를 추출해 cover_file로 사용
     if (!coverFile) {
       await extractEmbeddedCover(file);
     }
@@ -173,7 +167,7 @@ const UploadPage = () => {
 
   const handleSubmit = async () => {
     if (!audioFile) {
-      showToast("error", "음원 파일을 먼저 선택하세요.");
+      showToast("error", "오디오 파일을 선택해주세요.");
       return;
     }
     if (!title.trim() || !aiProvider.trim() || !aiModel.trim()) {
@@ -189,7 +183,6 @@ const UploadPage = () => {
     if (description.trim()) formData.append("description", description.trim());
     if (genre.trim()) formData.append("genre", genre.trim());
     if (tags.trim()) formData.append("tags", tags.trim());
-    // 커버 파일이 준비되어 있으면 전송 (사용자 선택 또는 내장 추출)
     if (coverFile && ALLOWED_COVER_TYPES.includes(normalizeCoverMime(coverFile.type))) {
       formData.append("cover_file", coverFile);
     }
@@ -198,12 +191,11 @@ const UploadPage = () => {
 
     setIsSubmitting(true);
     try {
-      const res = await createTrack(formData, { headers });
+      await createTrack(formData, { headers });
       showToast("success", "업로드가 완료되었습니다.");
-      const newId = (res as any)?.data?.id ?? (res as any)?.id;
-      navigate(newId ? `/tracks/${newId}` : "/library");
+      navigate("/music/profile");
     } catch (err: any) {
-      const detail = err?.response?.data?.message ?? "업로드 중 문제가 발생했습니다.";
+      const detail = err?.response?.data?.message ?? "업로드 도중 오류가 발생했습니다.";
       showToast("error", detail);
     } finally {
       setIsSubmitting(false);
@@ -214,14 +206,15 @@ const UploadPage = () => {
     <div className="space-y-6">
       <header className="space-y-2">
         <p className="text-sm uppercase tracking-[0.3em] text-gray-500">AI Upload</p>
-        <h1 className="text-3xl font-black text-gray-900">AI 트랙 업로드</h1>
-        <p className="text-gray-600">필수 입력: file, title, ai_provider, ai_model (+ 선택: description, genre, tags)</p>
+        <h1 className="text-3xl font-black text-gray-900">AI 음원 업로드</h1>
+        <p className="text-gray-600">필수 항목: file, title, ai_provider, ai_model (+ 옵션: description, genre, tags)</p>
       </header>
 
       {toast && (
         <div
-          className={`rounded-xl px-4 py-3 text-sm text-white ${toast.type === "error" ? "bg-red-500" : toast.type === "success" ? "bg-amber-500" : "bg-gray-800"
-            }`}
+          className={`rounded-xl px-4 py-3 text-sm text-white ${
+            toast.type === "error" ? "bg-red-500" : toast.type === "success" ? "bg-amber-500" : "bg-gray-800"
+          }`}
         >
           {toast.message}
         </div>
@@ -229,10 +222,10 @@ const UploadPage = () => {
 
       <div className="grid gap-6 rounded-2xl bg-white p-6 shadow-sm lg:grid-cols-[1fr_1fr]">
         <div className="space-y-4">
-          {/* 음원 업로드 */}
           <div
-            className={`flex min-h-[140px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed ${isAudioDrag ? "border-amber-500 bg-amber-50" : "border-gray-300 bg-gray-50"
-              } p-4 text-gray-700`}
+            className={`flex min-h-[140px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed ${
+              isAudioDrag ? "border-amber-500 bg-amber-50" : "border-gray-300 bg-gray-50"
+            } p-4 text-gray-700`}
             onDragOver={(e) => {
               e.preventDefault();
               setIsAudioDrag(true);
@@ -244,22 +237,16 @@ const UploadPage = () => {
             onDrop={onDropAudio}
             onClick={() => audioInputRef.current?.click()}
           >
-            <p className="font-semibold">여기에 드롭하거나 클릭하여 음원을 선택</p>
+            <p className="font-semibold">여기에 오디오 파일을 드래그하거나 클릭해서 선택하세요</p>
             <p className="text-sm text-gray-500">MP3 / WAV / FLAC · 최대 {MAX_AUDIO_MB}MB</p>
-            {audioName && <p className="mt-2 text-sm text-gray-700">선택됨: {audioName}</p>}
-            <input
-              ref={audioInputRef}
-              type="file"
-              accept=".mp3,.wav,.flac,audio/*"
-              className="hidden"
-              onChange={onAudioInputChange}
-            />
+            {audioName && <p className="mt-2 text-sm text-gray-700">선택 파일: {audioName}</p>}
+            <input ref={audioInputRef} type="file" accept=".mp3,.wav,.flac,audio/*" className="hidden" onChange={onAudioInputChange} />
           </div>
 
-          {/* 커버 업로드 */}
           <div
-            className={`flex min-h-[140px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed ${isCoverDrag ? "border-amber-500 bg-amber-50" : "border-gray-300 bg-gray-50"
-              } p-4 text-gray-700`}
+            className={`flex min-h-[140px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed ${
+              isCoverDrag ? "border-amber-500 bg-amber-50" : "border-gray-300 bg-gray-50"
+            } p-4 text-gray-700`}
             onDragOver={(e) => {
               e.preventDefault();
               setIsCoverDrag(true);
@@ -279,8 +266,8 @@ const UploadPage = () => {
             ) : (
               <>
                 <p className="font-semibold">커버 이미지 (선택)</p>
-                <p className="text-sm text-gray-500">이미지를 드롭하거나 클릭하여 선택</p>
-                <p className="text-sm text-gray-500">지원 형식: JPG / PNG / WEBP · 최대 {MAX_COVER_MB}MB</p>
+                <p className="text-sm text-gray-500">커버를 직접 올리거나 오디오에서 추출합니다.</p>
+                <p className="text-sm text-gray-500">허용 형식: JPG / PNG / WEBP · 최대 {MAX_COVER_MB}MB</p>
                 {coverName && <p className="mt-2 text-sm text-gray-700">{coverName}</p>}
               </>
             )}
@@ -337,7 +324,7 @@ const UploadPage = () => {
             <label className="text-sm font-semibold text-gray-800">태그 (선택)</label>
             <input
               className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm focus:border-amber-500 focus:outline-none"
-              placeholder="쉼표로 구분"
+              placeholder="콤마로 구분"
               value={tags}
               onChange={(e) => setTags(e.target.value)}
             />
@@ -347,7 +334,7 @@ const UploadPage = () => {
             <label className="text-sm font-semibold text-gray-800">설명 (선택)</label>
             <textarea
               className="min-h-[120px] rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm focus:border-amber-500 focus:outline-none"
-              placeholder="트랙 설명을 입력하세요"
+              placeholder="트랙에 대한 설명을 적어주세요"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />

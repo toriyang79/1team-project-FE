@@ -1,23 +1,17 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import type { Track, Comment } from "../api/tracks";
-import {
-  addComment,
-  deleteTrack,
-  fetchComments,
-  getTrack,
-  likeTrack,
-  listTracks,
-  unlikeTrack,
-  updateTrack,
-} from "../api/tracks";
+import { addComment, deleteTrack, fetchComments, getTrack, likeTrack, listTracks, unlikeTrack, updateTrack } from "../api/tracks";
 import { buildCoverUrl, buildStreamUrl } from "../utils/media";
 import { usePlayer } from "../context/PlayerContext";
+import { useAuth } from "../../../src/contexts/AuthContext";
 
 const TrackDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { play, prev, next, unavailable } = usePlayer();
+  const { user, isAuthenticated } = useAuth();
+
   const [track, setTrack] = useState<Track | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,6 +28,16 @@ const TrackDetailPage = () => {
   const [editTags, setEditTags] = useState("");
   const [editDesc, setEditDesc] = useState("");
 
+  const trackId = Number(id);
+  const isOwner = isAuthenticated && track?.owner_user_id !== undefined && user?.id === track.owner_user_id;
+
+  const getUploaderName = (t: Track) => {
+    if (t.owner_user_id && isAuthenticated && user?.id === t.owner_user_id) {
+      return user?.nickname || user?.email || `ID ${t.owner_user_id}`;
+    }
+    return (t as any).owner_nickname || (t as any).owner_name || (t.owner_user_id ? `ID ${t.owner_user_id}` : "-");
+  };
+
   const formatDuration = (value: number | string | null | undefined) => {
     if (value === null || value === undefined) return null;
     if (typeof value === "string" && value.includes(":")) return value;
@@ -43,8 +47,6 @@ const TrackDetailPage = () => {
     const s = `${Math.floor(secNum % 60)}`.padStart(2, "0");
     return `${m}:${s}`;
   };
-
-  const trackId = Number(id);
 
   useEffect(() => {
     if (!id || Number.isNaN(trackId)) {
@@ -67,7 +69,7 @@ const TrackDetailPage = () => {
 
     listTracks()
       .then((res) => {
-        const others = res.data.filter((item) => item.id !== trackId);
+        const others = res.data.filter((item: Track) => item.id !== trackId);
         setSimilar(others.slice(0, 5));
       })
       .catch(() => undefined);
@@ -75,20 +77,12 @@ const TrackDetailPage = () => {
     fetchComments(trackId)
       .then((res) => setComments(res.data))
       .catch(() => undefined);
-  }, [id]);
+  }, [id, trackId]);
 
   useEffect(() => {
-    // 트랙이 바뀔 때마다 커버 로드 오류 상태를 초기화
     setCoverError(false);
   }, [track?.id]);
 
-  // const coverUrl = useMemo(() => {
-  //   if (!track) return null;
-  //   if (track.cover_url) return buildMediaUrl(track.cover_url);
-  //   return null; // no cover info from API -> skip request
-  // }, [track]);
-
-  // 코드썸네일 이미지 주소 수정 
   const coverUrl = useMemo(() => {
     if (!track || !track.cover_url) return null;
     return buildCoverUrl(track.id);
@@ -96,7 +90,6 @@ const TrackDetailPage = () => {
 
   const audioUrl = useMemo(() => {
     if (!track) return "";
-    // 스트림 엔드포인트 사용
     return buildStreamUrl(track.id);
   }, [track]);
 
@@ -188,7 +181,7 @@ const TrackDetailPage = () => {
     if (!confirm("이 트랙을 삭제할까요?")) return;
     try {
       await deleteTrack(track.id);
-      navigate("/");
+      navigate("/music/profile");
     } catch (err) {
       console.error("delete error", err);
       alert("삭제에 실패했습니다.");
@@ -215,12 +208,7 @@ const TrackDetailPage = () => {
           <div className="flex flex-col md:flex-row gap-6">
             <div className="w-full md:w-64 md:h-64 aspect-square rounded-lg bg-surface-dark/10 overflow-hidden">
               {!coverError && coverUrl ? (
-                <img
-                  src={coverUrl}
-                  alt={track.title}
-                  className="w-full h-full object-cover"
-                  onError={() => setCoverError(true)}
-                />
+                <img src={coverUrl} alt={track.title} className="w-full h-full object-cover" onError={() => setCoverError(true)} />
               ) : (
                 <div className="w-full h-full bg-gradient-to-br from-surface-dark/60 to-surface-dark/20" />
               )}
@@ -248,14 +236,14 @@ const TrackDetailPage = () => {
                 <div className="flex gap-2">
                   <button
                     onClick={prev}
-                    className="w-11 h-11 rounded-full bg-surface-dark/10 flex items-center justify-center hover:bg-black/5"
+                    className="w-11 h-11 rounded-full bg-surface-dark/10 dark:bg-gray-800 dark:text-gray-100 flex items-center justify-center hover:bg-black/5 dark:hover:bg-gray-700"
                     aria-label="이전"
                   >
                     <span className="material-symbols-outlined">skip_previous</span>
                   </button>
                   <button
                     onClick={next}
-                    className="w-11 h-11 rounded-full bg-surface-dark/10 flex items-center justify-center hover:bg-black/5"
+                    className="w-11 h-11 rounded-full bg-surface-dark/10 dark:bg-gray-800 dark:text-gray-100 flex items-center justify-center hover:bg-black/5 dark:hover:bg-gray-700"
                     aria-label="다음"
                   >
                     <span className="material-symbols-outlined">skip_next</span>
@@ -265,13 +253,15 @@ const TrackDetailPage = () => {
                   <span>좋아요 {likesCount}</span>
                   <span>재생 {track.plays_count}</span>
                   <span>다운로드 {track.downloads_count ?? 0}</span>
+                  <span>업로더 {getUploaderName(track)}</span>
                 </div>
               </div>
               <div className="flex gap-3 flex-wrap text-sm">
                 <button
                   onClick={handleLike}
-                  className={`flex items-center gap-2 px-4 h-10 rounded-full bg-surface-dark/10 hover:bg-black/5 transition-colors ${liked ? 'text-primary' : ''
-                    }`}
+                  className={`flex items-center gap-2 px-4 h-10 rounded-full bg-surface-dark/10 hover:bg-black/5 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700 border border-transparent dark:border-gray-700 transition-colors ${
+                    liked ? "text-primary" : ""
+                  }`}
                 >
                   <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>
                     favorite
@@ -280,25 +270,29 @@ const TrackDetailPage = () => {
                 </button>
                 <button
                   onClick={handleShare}
-                  className="flex items-center gap-2 px-4 h-10 rounded-full bg-surface-dark/10 hover:bg-black/5 transition-colors"
+                  className="flex items-center gap-2 px-4 h-10 rounded-full bg-surface-dark/10 hover:bg-black/5 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700 border border-transparent dark:border-gray-700 transition-colors"
                 >
                   <span className="material-symbols-outlined text-xl">share</span>
                   <span>공유</span>
                 </button>
-                <button
-                  onClick={() => setEditing((v) => !v)}
-                  className="flex items-center gap-2 px-4 h-10 rounded-full bg-surface-dark/10 hover:bg-black/5 transition-colors"
-                >
-                  <span className="material-symbols-outlined text-xl">edit</span>
-                  <span>수정</span>
-                </button>
-                <button
-                  onClick={handleDelete}
-                  className="flex items-center gap-2 px-4 h-10 rounded-full bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
-                >
-                  <span className="material-symbols-outlined text-xl">delete</span>
-                  <span>삭제</span>
-                </button>
+                {isOwner && (
+                  <>
+                    <button
+                      onClick={() => setEditing((v) => !v)}
+                      className="flex items-center gap-2 px-4 h-10 rounded-full bg-surface-dark/10 hover:bg-black/5 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700 border border-transparent dark:border-gray-700 transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-xl">edit</span>
+                      <span>수정</span>
+                    </button>
+                    <button
+                      onClick={handleDelete}
+                      className="flex items-center gap-2 px-4 h-10 rounded-full bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-900/30 dark:text-red-200 dark:hover:bg-red-900/50 border border-red-200 dark:border-red-700 transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-xl">delete</span>
+                      <span>삭제</span>
+                    </button>
+                  </>
+                )}
               </div>
               {editing && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-surface-dark/5 p-4 rounded-lg">
@@ -327,17 +321,10 @@ const TrackDetailPage = () => {
                     placeholder="설명"
                   />
                   <div className="flex gap-2 sm:col-span-2">
-                    <button
-                      onClick={handleUpdate}
-                      disabled={saving}
-                      className="px-4 h-10 rounded-full bg-primary text-white text-sm font-bold disabled:opacity-60"
-                    >
-                      {saving ? '저장 중...' : '저장'}
+                    <button onClick={handleUpdate} disabled={saving} className="px-4 h-10 rounded-full bg-primary text-white text-sm font-bold disabled:opacity-60">
+                      {saving ? "저장 중..." : "저장"}
                     </button>
-                    <button
-                      onClick={() => setEditing(false)}
-                      className="px-4 h-10 rounded-full bg-surface-dark/10 text-sm"
-                    >
+                    <button onClick={() => setEditing(false)} className="px-4 h-10 rounded-full bg-surface-dark/10 text-sm">
                       취소
                     </button>
                   </div>
@@ -347,12 +334,10 @@ const TrackDetailPage = () => {
                 <audio controls className="w-full rounded-lg" src={audioUrl} />
                 <div className="flex justify-between text-xs text-muted-light">
                   <span>00:00</span>
-                  <span>{durationText ?? ''}</span>
+                  <span>{durationText ?? ""}</span>
                 </div>
               </div>
-              <p className="text-sm text-muted-light whitespace-pre-line">
-                {track.description ?? '설명 없음'}
-              </p>
+              <p className="text-sm text-muted-light whitespace-pre-line">{track.description ?? "설명 없음"}</p>
               <div className="flex flex-wrap gap-4 text-sm text-muted-light">
                 <span>업로드: {uploadedAt}</span>
                 {track.owner_user_id && <span>작성자 ID: {track.owner_user_id}</span>}
@@ -375,12 +360,7 @@ const TrackDetailPage = () => {
               >
                 <div className="w-16 h-16 rounded-md overflow-hidden bg-surface-dark/10">
                   {item.cover_url ? (
-                    <img
-                      // src={buildMediaUrl(item.cover_url)}
-                      src={buildCoverUrl(item.id)}
-                      alt={item.title}
-                      className="w-full h-full object-cover"
-                    />
+                    <img src={buildCoverUrl(item.id)} alt={item.title} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-surface-dark/60 to-surface-dark/20" />
                   )}
@@ -404,6 +384,7 @@ const TrackDetailPage = () => {
                       {item.downloads_count ?? 0}
                     </span>
                   </div>
+                  <p className="text-[11px] text-muted-light truncate">업로더: {getUploaderName(item)}</p>
                   <p className="text-[11px] text-muted-light truncate">
                     {item.ai_provider} · {item.ai_model}
                   </p>
@@ -433,13 +414,10 @@ const TrackDetailPage = () => {
               value={commentBody}
               onChange={(e) => setCommentBody(e.target.value)}
               className="form-textarea w-full min-h-24 resize-none rounded-lg text-text-light focus:outline-0 focus:ring-2 focus:ring-primary border-none bg-surface-light placeholder:text-muted-light text-base font-normal px-4 py-3"
-              placeholder="댓글을 입력해 주세요"
+              placeholder="댓글을 입력해주세요"
             />
             <div className="flex justify-end">
-              <button
-                onClick={handleComment}
-                className="px-4 h-10 rounded-full bg-primary text-white text-sm font-bold hover:opacity-90"
-              >
+              <button onClick={handleComment} className="px-4 h-10 rounded-full bg-primary text-white text-sm font-bold hover:opacity-90">
                 등록
               </button>
             </div>
@@ -452,10 +430,7 @@ const TrackDetailPage = () => {
               <div className="w-10 h-10 rounded-full bg-surface-dark/10" />
               <div className="flex-1">
                 <p className="font-bold text-sm">
-                  User {comment.user_id ?? 'unknown'}{' '}
-                  <span className="text-muted-light font-normal ml-2">
-                    {new Date(comment.created_at).toLocaleString()}
-                  </span>
+                  User {comment.user_id ?? "unknown"} <span className="text-muted-light font-normal ml-2">{new Date(comment.created_at).toLocaleString()}</span>
                 </p>
                 <p className="text-sm whitespace-pre-line">{comment.body}</p>
               </div>

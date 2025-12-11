@@ -1,10 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { listTracks, type Track } from "../api/tracks.ts";
 import { buildCoverUrl } from "../utils/media";
 import { usePlayer } from "../context/PlayerContext";
+import { useAuth } from "../../../src/contexts/AuthContext";
 
 const HomePage = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuth();
   const [tracks, setTracks] = useState<Track[]>([]);
   const [displayTracks, setDisplayTracks] = useState<Track[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,32 +40,37 @@ const HomePage = () => {
         let list: Track[] = [];
         if (Array.isArray(data)) {
           list = data;
-        } else if (data && typeof data === 'object') {
-          // 혹시 { tracks: [...] } 형태일 수도 있음
-          if (Array.isArray((data as any).tracks)) {
-            list = (data as any).tracks;
-          } else if (Array.isArray((data as any).items)) {
-            list = (data as any).items;
-          } else if (Array.isArray((data as any).data)) {
-            list = (data as any).data;
-          }
+        } else if (data && typeof data === "object") {
+          if (Array.isArray((data as any).tracks)) list = (data as any).tracks;
+          else if (Array.isArray((data as any).items)) list = (data as any).items;
+          else if (Array.isArray((data as any).data)) list = (data as any).data;
         }
         setTracks(list);
         setDisplayTracks(list);
       })
-      .catch(() => setError("추천 음악을 불러오지 못했어요. 잠시 후 다시 시도해 주세요."))
+      .catch(() => setError("트랙 목록을 불러오지 못했습니다. 잠시 후 다시 시도해주세요."))
       .finally(() => setLoading(false));
   }, []);
 
-  // 메모이제이션하여 재생 상태 변경 시 불필요한 리스트 리렌더 방지
-  const visibleTracks = useMemo(
-    () => displayTracks.filter((t) => !unavailable.has(t.id)),
-    [displayTracks, unavailable]
-  );
+  const visibleTracks = useMemo(() => displayTracks.filter((t) => !unavailable.has(t.id)), [displayTracks, unavailable]);
 
   const getMetaText = (track: Track) => {
     const duration = formatDuration(track.duration_seconds ?? (track as any).duration);
     return track.genre ?? (duration ? `길이 ${duration}` : null);
+  };
+
+  const getUploaderName = (track: Track) => {
+    // 백엔드에서 닉네임/이름을 내려주면 우선 사용
+    const backendName = (track as any).owner_nickname || (track as any).owner_name;
+    if (backendName) return backendName;
+
+    // 업로더가 현재 로그인 사용자라면 닉네임/이메일
+    if (track.owner_user_id && isAuthenticated && user?.id === track.owner_user_id) {
+      return user?.nickname || user?.email || `ID ${track.owner_user_id}`;
+    }
+
+    // 마지막으로 ID라도 노출
+    return track.owner_user_id ? `ID ${track.owner_user_id}` : "-";
   };
 
   const safeTracks = tracks.filter((t) => !unavailable.has(t.id));
@@ -76,11 +84,7 @@ const HomePage = () => {
   const TopCard = ({ track, label }: { track: Track; label: string }) => (
     <article className="bg-surface-light dark:bg-surface-dark rounded-xl p-4 flex gap-3 shadow-sm w-full max-w-[320px]">
       <div className="w-20 h-20 rounded-lg overflow-hidden bg-surface-dark/10 flex-shrink-0">
-        {track.cover_url ? (
-          <img src={buildCoverUrl(track.id)} alt={track.title} className="w-full h-full object-cover" />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-br from-surface-dark/60 to-surface-dark/20" />
-        )}
+        {track.cover_url ? <img src={buildCoverUrl(track.id)} alt={track.title} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-gradient-to-br from-surface-dark/60 to-surface-dark/20" />}
       </div>
       <div className="flex-1 min-w-0 flex flex-col gap-1">
         <span className="text-xs text-primary font-semibold">{label}</span>
@@ -100,6 +104,7 @@ const HomePage = () => {
             {track.downloads_count ?? 0}
           </span>
         </div>
+        <p className="text-[11px] text-muted-light truncate">업로더: {getUploaderName(track)}</p>
       </div>
     </article>
   );
@@ -120,22 +125,31 @@ const HomePage = () => {
       <section className="flex flex-col gap-4">
         <div className="flex justify-between items-center px-2">
           <h3 className="text-2xl font-bold leading-tight tracking-[-0.015em]">추천 트랙</h3>
-          <button
-            type="button"
-            onClick={() => setDisplayTracks((prev) => shuffleTracks(prev.length ? prev : tracks))}
-            className="flex items-center gap-2 h-10 px-4 rounded-full bg-primary text-background-dark text-sm font-bold hover:opacity-90 transition-opacity"
-          >
-            <span className="material-symbols-outlined text-base">refresh</span>
-            새로고침
-          </button>
+          <div className="flex items-center gap-2">
+            {isAuthenticated && (
+              <button
+                type="button"
+                onClick={() => navigate("/music/profile")}
+                className="flex items-center gap-2 h-10 px-4 rounded-full bg-primary text-background-dark text-sm font-bold hover:opacity-90 transition-opacity"
+              >
+                <span className="material-symbols-outlined text-base">library_music</span>
+                라이브러리
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => setDisplayTracks((prev) => shuffleTracks(prev.length ? prev : tracks))}
+              className="flex items-center gap-2 h-10 px-4 rounded-full bg-primary text-background-dark text-sm font-bold hover:opacity-90 transition-opacity"
+            >
+              <span className="material-symbols-outlined text-base">refresh</span>
+              새로고침
+            </button>
+          </div>
         </div>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,240px))] justify-center gap-4">
           {loading &&
             Array.from({ length: 6 }).map((_, idx) => (
-              <div
-                key={idx}
-                className="aspect-[3/4] rounded-xl bg-surface-light dark:bg-surface-dark/70 animate-pulse"
-              />
+              <div key={idx} className="aspect-[3/4] rounded-xl bg-surface-light dark:bg-surface-dark/70 animate-pulse" />
             ))}
           {!loading &&
             !error &&
@@ -147,12 +161,7 @@ const HomePage = () => {
                 <div className="relative aspect-square rounded-lg bg-surface-dark/10 overflow-hidden">
                   <Link to={`tracks/${track.id}`} className="absolute inset-0 z-0">
                     {track.cover_url ? (
-                      <img
-                        src={buildCoverUrl(track.id)}
-                        alt={track.title}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                      />
+                      <img src={buildCoverUrl(track.id)} alt={track.title} className="w-full h-full object-cover" loading="lazy" />
                     ) : (
                       <div className="w-full h-full bg-gradient-to-br from-surface-dark/60 to-surface-dark/20" />
                     )}
@@ -169,9 +178,7 @@ const HomePage = () => {
                   <Link to={`tracks/${track.id}`} className="group">
                     <h4 className="font-bold line-clamp-2 group-hover:text-primary transition-colors">{track.title}</h4>
                   </Link>
-                  {getMetaText(track) && (
-                    <p className="text-sm text-muted-light line-clamp-2">{getMetaText(track)}</p>
-                  )}
+                  {getMetaText(track) && <p className="text-sm text-muted-light line-clamp-2">{getMetaText(track)}</p>}
                   <div className="text-xs text-muted-light flex items-center gap-3">
                     <span className="flex items-center gap-1">
                       <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: "'FILL' 1" }}>
@@ -184,6 +191,7 @@ const HomePage = () => {
                       {track.downloads_count ?? 0}
                     </span>
                   </div>
+                  <p className="text-[11px] text-muted-light truncate">업로더: {getUploaderName(track)}</p>
                   <p className="text-xs text-muted-light truncate">
                     {track.ai_provider} · {track.ai_model}
                   </p>
@@ -194,7 +202,7 @@ const HomePage = () => {
             <div className="col-span-full text-center text-sm text-red-600 bg-red-50 rounded-lg p-3">{error}</div>
           )}
           {!loading && !error && visibleTracks.length === 0 && (
-            <div className="col-span-full text-center text-sm text-muted-light">재생 가능한 트랙이 없어요.</div>
+            <div className="col-span-full text-center text-sm text-muted-light">표시할 트랙이 없습니다.</div>
           )}
         </div>
       </section>
@@ -202,11 +210,11 @@ const HomePage = () => {
       {(topDownloaded.length || topLiked.length) && (
         <section className="flex flex-col gap-4 px-2">
           <div className="flex items-center justify-between">
-            <h3 className="text-xl font-bold leading-tight tracking-[-0.01em]">지금 인기</h3>
+            <h3 className="text-xl font-bold leading-tight tracking-[-0.01em]">인기 목록</h3>
           </div>
           {topDownloaded.length > 0 && (
             <div className="flex flex-col gap-2">
-              <div className="text-sm font-semibold text-primary">다운로드 많은 순</div>
+              <div className="text-sm font-semibold text-primary">다운로드 순 TOP</div>
               <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3">
                 {topDownloaded.map((t) => (
                   <TopCard key={`download-${t.id}`} track={t} label="다운로드" />
@@ -216,7 +224,7 @@ const HomePage = () => {
           )}
           {topLiked.length > 0 && (
             <div className="flex flex-col gap-2">
-              <div className="text-sm font-semibold text-primary">좋아요 많은 순</div>
+              <div className="text-sm font-semibold text-primary">좋아요 순 TOP</div>
               <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3">
                 {topLiked.map((t) => (
                   <TopCard key={`like-${t.id}`} track={t} label="좋아요" />

@@ -1,8 +1,30 @@
 import axios from 'axios';
 
 // 팀 내 변수명 충돌을 피하기 위해 API_VIDEO_BASE_URL 사용 (이미지 API용)
-const API_VIDEO_BASE_URL =
-  import.meta.env.VITE_IMG_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || '/img-api';
+// 프로덕션: 직접 백엔드 API 호출, 개발: vite proxy 사용
+const getBaseURL = () => {
+  // 환경변수가 설정되어 있으면 우선 사용
+  if (import.meta.env.VITE_IMG_API_BASE_URL) {
+    return import.meta.env.VITE_IMG_API_BASE_URL;
+  }
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL;
+  }
+
+  // 프로덕션 환경 감지 (localhost가 아니면 프로덕션으로 간주)
+  const isProduction = !window.location.hostname.includes('localhost') &&
+                       !window.location.hostname.includes('127.0.0.1');
+
+  if (isProduction) {
+    // 프로덕션: 백엔드 API 직접 호출
+    return 'http://13.125.57.129:8000/api/v1';
+  } else {
+    // 개발: vite proxy 사용
+    return '/img-api';
+  }
+};
+
+const API_VIDEO_BASE_URL = getBaseURL();
 
 const api = axios.create({
   baseURL: API_VIDEO_BASE_URL,

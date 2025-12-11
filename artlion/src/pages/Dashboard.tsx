@@ -50,8 +50,14 @@ const Dashboard: React.FC = () => {
 
     // 음악 트랙
     listTracks()
-      .then((res) => setTracks(res.data.slice(0, 8)))
-      .catch((err) => console.error('Failed to fetch tracks', err));
+      .then((res) => {
+        const data = Array.isArray(res.data) ? res.data : [];
+        setTracks(data.slice(0, 8));
+      })
+      .catch((err) => {
+        console.error('Failed to fetch tracks', err);
+        setTracks([]);
+      });
 
     // 인기 이미지
     fetch('/img-api/images/feed/top-24h?limit=4')

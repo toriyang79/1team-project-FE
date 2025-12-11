@@ -43,9 +43,13 @@ api.interceptors.request.use(
   (config) => {
     try {
       if (typeof window !== 'undefined' && window.localStorage) {
-        const token = localStorage.getItem('token');
+        // music_front와 동일한 키 사용: 'access_token'
+        const token = localStorage.getItem('access_token');
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
+          console.log('[axios] 토큰 추가됨');
+        } else {
+          console.warn('[axios] access_token이 없습니다');
         }
       }
     } catch (error) {
@@ -60,26 +64,29 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    console.error('API Error:', error?.response ?? error);
     if (error.response) {
       const { status } = error.response;
       if (status === 401) {
         try {
           if (typeof window !== 'undefined' && window.localStorage) {
-            localStorage.removeItem('token');
+            // music_front와 동일한 키 사용: 'access_token'
+            localStorage.removeItem('access_token');
           }
         } catch (err) {
           console.warn('localStorage 초기화 오류:', err?.message);
         }
-        window.location.href = '/login';
+        // 로그인 페이지로 리다이렉트하지 않고 에러만 반환
+        // window.location.href = '/login';
       }
       if (status === 403) {
-        alert('접근 권한이 없습니다.');
+        console.error('접근 권한이 없습니다.');
       }
       if (status === 404) {
         console.error('요청한 리소스를 찾을 수 없습니다.');
       }
       if (status >= 500) {
-        alert('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+        console.error('서버 오류가 발생했습니다.');
       }
     }
     return Promise.reject(error);

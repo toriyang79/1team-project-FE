@@ -72,8 +72,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const response = await authService.register(data);
       setUser(response.user);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Register error:', error);
+      console.error('Register error response:', error.response?.data);
+      console.error('Register error status:', error.response?.status);
       throw error;
     }
   };

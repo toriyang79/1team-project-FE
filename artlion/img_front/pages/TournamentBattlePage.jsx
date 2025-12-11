@@ -133,8 +133,8 @@ const TournamentBattlePage = () => {
       } finally {
         setIsVoting(false);
         setSelectedSide(null);
-        // 랭킹 페이지로 이동 (현재 경로 기준 상대 이동)
-        navigate('../ranking');
+        // 랭킹 페이지로 이동
+        navigate('/images/tournament/ranking');
       }
     }, 800);
   };

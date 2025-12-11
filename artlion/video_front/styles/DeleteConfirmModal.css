@@ -1,0 +1,143 @@
+.delete-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.delete-modal-content {
+  border-radius: 1rem;
+  max-width: 450px;
+  width: 100%;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.delete-modal-overlay.light .delete-modal-content {
+  background-color: var(--background-light);
+  color: var(--text-light);
+}
+
+.delete-modal-overlay.dark .delete-modal-content {
+  background-color: var(--background-dark);
+  color: var(--text-dark);
+}
+
+.delete-modal-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1.5rem 1rem;
+  text-align: center;
+}
+
+.delete-icon {
+  font-size: 64px;
+  color: #ef4444;
+  margin-bottom: 1rem;
+}
+
+.delete-modal-header h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.delete-modal-body {
+  padding: 1rem 1.5rem 2rem;
+  text-align: center;
+}
+
+.delete-modal-body p {
+  margin: 0.5rem 0;
+  line-height: 1.6;
+}
+
+.video-name-display {
+  font-weight: 600;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+  word-break: break-all;
+}
+
+.delete-modal-overlay.light .video-name-display {
+  background-color: var(--surface-light);
+}
+
+.delete-modal-overlay.dark .video-name-display {
+  background-color: var(--surface-dark);
+}
+
+.warning-text {
+  color: #ef4444;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.delete-modal-footer {
+  display: flex;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-top: 1px solid;
+}
+
+.delete-modal-overlay.light .delete-modal-footer {
+  border-color: var(--surface-light);
+}
+
+.delete-modal-overlay.dark .delete-modal-footer {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.delete-modal-footer .btn-cancel,
+.delete-modal-footer .btn-delete {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.delete-modal-footer .btn-cancel {
+  border: 1px solid;
+}
+
+.delete-modal-overlay.light .btn-cancel {
+  background-color: transparent;
+  border-color: var(--surface-light);
+  color: var(--text-light);
+}
+
+.delete-modal-overlay.dark .btn-cancel {
+  background-color: transparent;
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--text-dark);
+}
+
+.btn-cancel:hover:not(:disabled) {
+  opacity: 0.7;
+}
+
+.btn-delete {
+  background-color: #ef4444;
+  color: white;
+  border: none;
+}
+
+.btn-delete:hover:not(:disabled) {
+  background-color: #dc2626;
+}
+
+.btn-delete:disabled,
+.btn-cancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

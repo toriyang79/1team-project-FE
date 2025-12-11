@@ -11,11 +11,12 @@ export default defineConfig({
         target: 'https://www.artlion.p-e.kr',
         changeOrigin: true,
         secure: false,
+        
       },
       '/music-api': {
         target: 'https://www.genbox.kro.kr',
         changeOrigin: true,
-        secure: true,
+        secure: false,
         rewrite: (path) => path.replace(/^\/music-api/, '/api'),
       },
       '/video-api': {

@@ -26,6 +26,10 @@ const getBaseURL = () => {
 
 const API_VIDEO_BASE_URL = getBaseURL();
 
+// 디버깅: baseURL 확인
+console.log('[img_front axios] baseURL:', API_VIDEO_BASE_URL);
+console.log('[img_front axios] hostname:', window.location.hostname);
+
 const api = axios.create({
   baseURL: API_VIDEO_BASE_URL,
   timeout: 10000, // 10초 타임아웃

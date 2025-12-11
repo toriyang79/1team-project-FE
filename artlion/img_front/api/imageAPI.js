@@ -37,15 +37,24 @@ export const getImageById = async (imageId) => {
 // ===== 3. 이미지 업로드 =====
 export const uploadImage = async (formData) => {
   try {
+    console.log('[uploadImage] 업로드 시작');
+    console.log('[uploadImage] FormData entries:');
+    for (let pair of formData.entries()) {
+      console.log(`  ${pair[0]}:`, pair[1]);
+    }
+
     // multipart/form-data로 전송
     const response = await api.post('/images/', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
+    console.log('[uploadImage] 업로드 성공:', response.data);
     return response.data;
   } catch (error) {
-    console.error('이미지 업로드 실패:', error);
+    console.error('[uploadImage] 이미지 업로드 실패:', error);
+    console.error('[uploadImage] 에러 응답:', error.response?.data);
+    console.error('[uploadImage] 에러 상태:', error.response?.status);
     throw error;
   }
 };

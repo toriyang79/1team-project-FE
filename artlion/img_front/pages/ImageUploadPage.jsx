@@ -89,7 +89,24 @@ const ImageUploadPage = () => {
       navigate('/');
     } catch (error) {
       console.error('업로드 실패:', error);
-      alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+      console.error('에러 상세:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+      });
+
+      // 상세한 에러 메시지 표시
+      let errorMessage = '이미지 업로드에 실패했습니다.';
+      if (error.response) {
+        errorMessage += `\n상태: ${error.response.status}`;
+        if (error.response.data?.detail) {
+          errorMessage += `\n상세: ${error.response.data.detail}`;
+        }
+      } else if (error.request) {
+        errorMessage += '\n서버에 연결할 수 없습니다.';
+      }
+      alert(errorMessage);
     } finally {
       setIsUploading(false);
     }

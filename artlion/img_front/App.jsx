@@ -16,7 +16,11 @@ import Footer from '../src/components/Footer';
 
 function App() {
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('theme') === 'dark' ? 'dark' : 'light';
+    try {
+      return localStorage.getItem('theme') === 'dark' ? 'dark' : 'light';
+    } catch {
+      return 'light';
+    }
   });
   const [isAuthenticated] = useState(false);
   const [userNickname] = useState(undefined);
@@ -24,7 +28,11 @@ function App() {
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
-    localStorage.setItem('theme', theme);
+    try {
+      localStorage.setItem('theme', theme);
+    } catch {
+      console.warn('localStorage access denied');
+    }
   }, [theme]);
 
   const handleToggleTheme = () => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));

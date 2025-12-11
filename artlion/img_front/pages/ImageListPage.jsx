@@ -60,7 +60,7 @@ const ImageListPage = () => {
   return (
     <div className="min-h-screen bg-background-light dark:bg-background-dark">
       <div className="max-w-6xl mx-auto px-4 sm:px-8 md:px-12 lg:px-16 py-8">
-        <div className="mb-8">
+        <div className="mb-8 text-center">
           <h1 className="text-4xl font-bold text-text-light dark:text-text-dark mb-2">
             AI 이미지 갤러리
           </h1>
@@ -68,7 +68,7 @@ const ImageListPage = () => {
             AI로 생성된 멋진 이미지들을 탐색해보세요
           </p>
 
-          <div className="mt-4 mb-6 flex flex-wrap gap-3">
+          <div className="mt-4 mb-6 flex flex-wrap gap-3 justify-center">
             <Link to="/images/top">
               <Button variant="primary" size="small">상위 이미지</Button>
             </Link>

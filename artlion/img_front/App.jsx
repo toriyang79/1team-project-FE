@@ -50,7 +50,7 @@ function App() {
     const params = query ? `?q=${encodeURIComponent(query)}` : '';
     navigate(`/${params}`);
   };
-  const handleUploadClick = () => navigate('/upload');
+  const handleUploadClick = () => navigate('/images/upload');
 
   return (
     <div className="bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark min-h-screen w-full font-display flex flex-col">

@@ -1,22 +1,18 @@
-/**
- * Axios 기본 설정
- */
-
 import axios from 'axios';
 
-// Vite 환경 변수 사용 (VITE_*), 기본은 /img-api 프록시
+// 팀 내 변수명 충돌을 피하기 위해 API_VIDEO_BASE_URL 사용 (이미지 API용)
+const API_VIDEO_BASE_URL =
+  import.meta.env.VITE_IMG_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || '/img-api';
+
 const api = axios.create({
-  baseURL:
-    import.meta.env.VITE_IMG_API_BASE_URL ||
-    import.meta.env.VITE_API_BASE_URL ||
-    '/img-api',
+  baseURL: API_VIDEO_BASE_URL,
   timeout: 10000, // 10초 타임아웃
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// 요청 인터셉터: JWT 토큰이 있으면 Authorization 헤더 추가
+// 요청 인터셉터: JWT 토큰이 있으면 Authorization 헤더에 추가
 api.interceptors.request.use(
   (config) => {
     try {
@@ -34,7 +30,7 @@ api.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
-// 응답 인터셉터: 에러 공통 처리
+// 응답 인터셉터: 인증/권한/서버 오류 처리
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -46,7 +42,7 @@ api.interceptors.response.use(
             localStorage.removeItem('token');
           }
         } catch (err) {
-          console.warn('localStorage 삭제 오류:', err?.message);
+          console.warn('localStorage 초기화 오류:', err?.message);
         }
         window.location.href = '/login';
       }

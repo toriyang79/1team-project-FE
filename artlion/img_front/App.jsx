@@ -13,8 +13,11 @@ import NotFoundPage from './pages/NotFoundPage';
 // 공용 네브/풋터
 import Navbar from '../src/components/Navbar';
 import Footer from '../src/components/Footer';
+// 인증 컨텍스트
+import { useAuth } from '../src/contexts/AuthContext';
 
 function App() {
+  const { isAuthenticated, user, logout } = useAuth();
   const [theme, setTheme] = useState(() => {
     try {
       return localStorage.getItem('theme') === 'dark' ? 'dark' : 'light';
@@ -22,8 +25,6 @@ function App() {
       return 'light';
     }
   });
-  const [isAuthenticated] = useState(false);
-  const [userNickname] = useState(undefined);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,7 +37,14 @@ function App() {
   }, [theme]);
 
   const handleToggleTheme = () => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
-  const handleLogout = () => {};
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/');
+    } catch (error) {
+      console.error('로그아웃 실패:', error);
+    }
+  };
   const handleSearch = (query) => {
     // 검색어를 쿼리스트링으로 전달 (필요 시 리스트 페이지에서 사용)
     const params = query ? `?q=${encodeURIComponent(query)}` : '';
@@ -52,7 +60,7 @@ function App() {
             theme={theme}
             onToggleTheme={handleToggleTheme}
             isAuthenticated={isAuthenticated}
-            userNickname={userNickname}
+            userNickname={user?.nickname}
             onLogout={handleLogout}
             onSearch={handleSearch}
             onUploadClick={handleUploadClick}

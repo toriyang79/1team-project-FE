@@ -3,7 +3,7 @@ import axios from 'axios';
 const userId = import.meta.env.VITE_MUSIC_DEV_USER_ID;
 
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_MUSIC_API_BASE_URL,
+  baseURL: import.meta.env.VITE_MUSIC_API_BASE_URL || '/music-api',
 });
 
 api.interceptors.request.use((config) => {

@@ -77,7 +77,8 @@ const ImageUploadPage = () => {
     try {
       // FormData 생성
       const uploadFormData = new FormData();
-      uploadFormData.append('image', imageFile);
+      // 백엔드가 'file' 필드명을 기대할 수 있음 (music API 패턴)
+      uploadFormData.append('file', imageFile);
       uploadFormData.append('prompt', formData.prompt);
       uploadFormData.append('model_name', formData.model_name);
       uploadFormData.append('is_tournament_opt_in', formData.is_tournament_opt_in);

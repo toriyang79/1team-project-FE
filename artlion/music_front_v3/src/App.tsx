@@ -10,15 +10,54 @@ import UploadPage from "./pages/UploadPage";
 
 const App = () => {
   const [theme, setTheme] = useState<"light" | "dark">("light");
-  const [isAuthenticated] = useState(false);
-  const [userNickname] = useState<string | undefined>(undefined);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userNickname, setUserNickname] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
   }, [theme]);
 
+  // 로컬스토리지에 저장된 토큰/유저 정보 기반으로 인증 상태 설정
+  useEffect(() => {
+    const loadAuth = () => {
+      const token = localStorage.getItem("access_token");
+      const userRaw = localStorage.getItem("user");
+      setIsAuthenticated(!!token);
+
+      let nickname: string | undefined = undefined;
+      if (userRaw) {
+        try {
+          const parsed = JSON.parse(userRaw);
+          nickname = parsed?.nickname || parsed?.email || undefined;
+        } catch (e) {
+          nickname = undefined;
+        }
+      }
+      // 사용자 정보가 없더라도 토큰이 있으면 기본 닉네임을 표시
+      if (!nickname && token) {
+        nickname = "사용자";
+      }
+      setUserNickname(nickname);
+    };
+
+    loadAuth();
+    const onStorage = (e: StorageEvent) => {
+      if (["access_token", "user", "refresh_token"].includes(e.key || "")) {
+        loadAuth();
+      }
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
+
   const handleToggleTheme = () => setTheme((prev) => (prev === "dark" ? "light" : "dark"));
-  const handleLogout = () => { };
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("user");
+    setIsAuthenticated(false);
+    setUserNickname(undefined);
+  };
 
   return (
     <BrowserRouter>

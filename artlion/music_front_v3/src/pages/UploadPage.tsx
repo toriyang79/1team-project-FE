@@ -40,7 +40,8 @@ const UploadPage = () => {
 
   const audioInputRef = useRef<HTMLInputElement | null>(null);
   const coverInputRef = useRef<HTMLInputElement | null>(null);
-  const devUserId = import.meta.env.VITE_MUSIC_DEV_USER_ID as string | undefined;
+  // dev 강제 사용자 주입 제거
+  const devUserId = undefined as string | undefined;
 
   useEffect(() => {
     return () => {
@@ -194,7 +195,6 @@ const UploadPage = () => {
     }
 
     const headers: Record<string, string> = {};
-    if (devUserId) headers["X-User-Id"] = devUserId;
 
     setIsSubmitting(true);
     try {

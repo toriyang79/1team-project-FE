@@ -70,7 +70,7 @@ const ImageListPage = () => {
 
           <div className="mt-4 mb-6 flex flex-wrap gap-3 justify-center">
             <Link to="/images/top">
-              <Button variant="primary" size="small">상위 이미지</Button>
+              <Button variant="primary" size="small">인기top10</Button>
             </Link>
             <Link to="/images/tournament/battle">
               <Button variant="primary" size="small">토너먼트 배틀</Button>

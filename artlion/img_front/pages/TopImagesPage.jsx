@@ -5,11 +5,14 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { getTopImages } from '../api/imageAPI';
 import ImageCard from '../components/ImageCard';
 import LoadingSpinner from '../components/LoadingSpinner';
+import Button from '../components/Button';
 
 const TopImagesPage = () => {
+  const navigate = useNavigate();
   const [topImages, setTopImages] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -41,9 +44,19 @@ const TopImagesPage = () => {
   return (
     <div className="min-h-screen bg-background-light dark:bg-background-dark">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* 돌아가기 버튼 */}
+        <div className="mb-6">
+          <Button variant="secondary" size="small" onClick={() => navigate('/images')}>
+            <span className="flex items-center gap-2">
+              <span className="material-symbols-outlined">arrow_back</span>
+              돌아가기
+            </span>
+          </Button>
+        </div>
+
         {/* 헤더 */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
+        <div className="mb-8 text-center">
+          <div className="flex items-center justify-center gap-3 mb-2">
             <span className="material-symbols-outlined text-5xl text-primary">
               trending_up
             </span>
@@ -54,6 +67,18 @@ const TopImagesPage = () => {
           <p className="text-muted-light dark:text-muted-dark">
             최근 24시간 동안 가장 많은 좋아요를 받은 이미지
           </p>
+          {/* 바로가기 버튼 그룹 */}
+          <div className="mt-4 mb-6 flex flex-wrap gap-3 justify-center">
+            <Link to="/images/top">
+              <Button variant="primary" size="small">인기top10</Button>
+            </Link>
+            <Link to="/images/tournament/battle">
+              <Button variant="primary" size="small">토너먼트 배틀</Button>
+            </Link>
+            <Link to="/images/tournament/ranking">
+              <Button variant="primary" size="small">토너먼트 랭킹</Button>
+            </Link>
+          </div>
         </div>
 
         {/* 인기 이미지 그리드 */}

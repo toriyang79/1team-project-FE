@@ -1,13 +1,11 @@
 import axios from "axios";
 
-// Vite 환경 변수 사용
-const API_BASE_URL = "/video-api";
-// import.meta.env.VITE_API_URL ||
-// import.meta.env.VITE_VIDEO_API_URL ||
-// "/video-api";
+// 로컬(dev)에서는 프록시 경로(/video-api)로 강제해 CORS 회피, 배포 시에는 환경 변수 사용
+const isLocalhost = typeof window !== "undefined" && window.location.origin.includes("localhost");
+const API_VIDEO_BASE_URL = isLocalhost ? "/video-api" : import.meta.env.VITE_VIDEO_API_URL || "/video-api";
 
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: API_VIDEO_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -65,10 +63,10 @@ export const videoAPI = {
   },
 
   // Get video stream URL
-  getStreamUrl: (videoId) => `${API_BASE_URL}/videos/${videoId}/stream`,
+  getStreamUrl: (videoId) => `${API_VIDEO_BASE_URL}/videos/${videoId}/stream`,
 
   // Get video download URL
-  getDownloadUrl: (videoId) => `${API_BASE_URL}/videos/${videoId}/download`,
+  getDownloadUrl: (videoId) => `${API_VIDEO_BASE_URL}/videos/${videoId}/download`,
 };
 
 // Like API

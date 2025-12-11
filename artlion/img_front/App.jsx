@@ -62,7 +62,7 @@ function App() {
             <Routes>
               {/* <Route path="/" element={<ImageListPageDummy />} /> */}
               <Route path="/" element={<ImageListPage />} />
-              <Route path="/images/:id" element={<ImageDetailPage />} />
+              <Route path="/:id" element={<ImageDetailPage />} />
               <Route path="/upload" element={<ImageUploadPage />} />
               <Route path="/random" element={<RandomFeedPage />} />
               <Route path="/top" element={<TopImagesPage />} />

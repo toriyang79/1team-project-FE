@@ -6,10 +6,17 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
+
       '/api': {
+        target: 'https://www.artlion.p-e.kr',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/music-api': {
         target: 'https://www.genbox.kro.kr',
         changeOrigin: true,
         secure: true,
+        rewrite: (path) => path.replace(/^\/music-api/, '/api'),
       },
       '/video-api': {
         target: 'https://shorts-artlion.duckdns.org',
@@ -26,4 +33,3 @@ export default defineConfig({
     },
   },
 })
-

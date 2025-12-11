@@ -12,12 +12,65 @@ import LikeButton from '../components/LikeButton';
 import Button from '../components/Button';
 import LoadingSpinner from '../components/LoadingSpinner';
 
+// 날짜 포맷 유틸리티 함수
+const formatDate = (dateString) => {
+  if (!dateString) return '';
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('ko-KR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  } catch (error) {
+    return dateString;
+  }
+};
+
 const ImageDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [image, setImage] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // 이미지 데이터 불러오기
+  useEffect(() => {
+    const fetchImage = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const data = await getImageById(id);
+        setImage(data);
+      } catch (err) {
+        console.error('이미지 조회 실패:', err);
+        setError(err.response?.data?.detail || err.message || '이미지를 불러오는데 실패했습니다.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchImage();
+    }
+  }, [id]);
+
+  // 프롬프트 복사 핸들러
+  const handleCopyPrompt = () => {
+    if (image?.prompt) {
+      navigator.clipboard.writeText(image.prompt).then(
+        () => {
+          alert('프롬프트가 복사되었습니다!');
+        },
+        (err) => {
+          console.error('복사 실패:', err);
+          alert('복사에 실패했습니다. 다시 시도해주세요.');
+        }
+      );
+    }
+  };
 
   // 로딩 중
   if (isLoading) {

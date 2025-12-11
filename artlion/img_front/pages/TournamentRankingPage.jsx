@@ -5,9 +5,11 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { getRankings } from '../api/tournamentAPI';
 import ImageCard from '../components/ImageCard';
 import LoadingSpinner from '../components/LoadingSpinner';
+import Button from '../components/Button';
 
 // 더미 랭킹 데이터 (승률 기준 정렬)
 const rankingData = [
@@ -134,6 +136,7 @@ const rankingData = [
 ];
 
 const TournamentRankingPage = () => {
+  const navigate = useNavigate();
   const [rankings, setRankings] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [sortBy, setSortBy] = useState('rank');
@@ -207,9 +210,19 @@ const TournamentRankingPage = () => {
   return (
     <div className="min-h-screen bg-background-light dark:bg-background-dark">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* 돌아가기 버튼 */}
+        <div className="mb-6">
+          <Button variant="secondary" size="small" onClick={() => navigate('/images')}>
+            <span className="flex items-center gap-2">
+              <span className="material-symbols-outlined">arrow_back</span>
+              돌아가기
+            </span>
+          </Button>
+        </div>
+
         {/* 헤더 */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
+        <div className="mb-8 text-center">
+          <div className="flex items-center justify-center gap-3 mb-2">
             <span className="material-symbols-outlined text-5xl text-primary">
               leaderboard
             </span>
@@ -229,69 +242,28 @@ const TournamentRankingPage = () => {
           )}
         </div>
 
-        {/* 정렬 옵션 */}
-        <div className="mb-6 flex gap-3 items-center flex-wrap">
-          <span className="text-sm text-muted-light dark:text-muted-dark">정렬:</span>
-          <button
-            onClick={() => setSortBy('rank')}
-            className={`
-              px-4 py-2 rounded-lg text-sm font-medium transition-colors
-              ${
-                sortBy === 'rank'
-                  ? 'bg-primary text-white'
-                  : 'bg-surface-light dark:bg-surface-dark text-text-light dark:text-text-dark hover:bg-primary/20'
-              }
-            `}
-          >
-            랭킹순
-          </button>
-          <button
-            onClick={() => setSortBy('win_rate')}
-            className={`
-              px-4 py-2 rounded-lg text-sm font-medium transition-colors
-              ${
-                sortBy === 'win_rate'
-                  ? 'bg-primary text-white'
-                  : 'bg-surface-light dark:bg-surface-dark text-text-light dark:text-text-dark hover:bg-primary/20'
-              }
-            `}
-          >
-            승률순
-          </button>
-          <button
-            onClick={() => setSortBy('wins')}
-            className={`
-              px-4 py-2 rounded-lg text-sm font-medium transition-colors
-              ${
-                sortBy === 'wins'
-                  ? 'bg-primary text-white'
-                  : 'bg-surface-light dark:bg-surface-dark text-text-light dark:text-text-dark hover:bg-primary/20'
-              }
-            `}
-          >
-            승수순
-          </button>
-          <button
-            onClick={() => setSortBy('elo_score')}
-            className={`
-              px-4 py-2 rounded-lg text-sm font-medium transition-colors
-              ${
-                sortBy === 'elo_score'
-                  ? 'bg-primary text-white'
-                  : 'bg-surface-light dark:bg-surface-dark text-text-light dark:text-text-dark hover:bg-primary/20'
-              }
-            `}
-          >
-            ELO 점수순
-          </button>
+        {/* 바로가기 버튼 그룹 */}
+        <div className="mt-4 mb-8 flex flex-wrap gap-3 justify-center">
+          <Link to="/images/top">
+            <Button variant="primary" size="small">인기top10</Button>
+          </Link>
+          <Link to="/images/tournament/battle">
+            <Button variant="primary" size="small">토너먼트 배틀</Button>
+          </Link>
+          <Link to="/images/tournament/ranking">
+            <Button variant="primary" size="small">토너먼트 랭킹</Button>
+          </Link>
         </div>
+
+        
 
         {/* 랭킹 리스트 */}
         <div className="space-y-4">
           {sortedRankings.map((item, index) => (
             <div
               key={item.id}
-              className="bg-surface-light dark:bg-surface-dark rounded-xl p-4 flex items-center gap-4 hover:shadow-lg transition-shadow"
+              onClick={() => navigate(`/images/${item.id}`)}
+              className="bg-surface-light dark:bg-surface-dark rounded-xl p-4 flex items-center gap-4 hover:shadow-lg transition-shadow cursor-pointer"
             >
               {/* 순위 */}
               <div className="flex-shrink-0">
@@ -319,7 +291,7 @@ const TournamentRankingPage = () => {
                 <img
                   src={item.image_url}
                   alt={item.prompt}
-                  className="w-24 h-24 object-cover rounded-lg"
+                  className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 object-cover rounded-lg"
                 />
               </div>
 
@@ -366,8 +338,11 @@ const TournamentRankingPage = () => {
           ))}
         </div>
 
+        {/* 섹션 간 간격 확보 */}
+        <div className="h-8 sm:h-12" aria-hidden="true"></div>
+
         {/* 하단 안내 */}
-        <div className="mt-12 text-center p-6 bg-surface-light dark:bg-surface-dark rounded-xl">
+        <div className="mt-16 text-center p-6 bg-surface-light dark:bg-surface-dark rounded-xl">
           <p className="text-muted-light dark:text-muted-dark mb-2">
             💡 토너먼트 배틀에 참여하여 순위에 영향을 주세요
           </p>

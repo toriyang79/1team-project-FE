@@ -5,6 +5,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { getMatch, vote } from '../api/tournamentAPI';
 import Button from '../components/Button';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -76,6 +77,7 @@ const getRandomMatch = () => {
 };
 
 const TournamentBattlePage = () => {
+  const navigate = useNavigate();
   const [match, setMatch] = useState(null);
   const [voteCount, setVoteCount] = useState(0);
   const [isVoting, setIsVoting] = useState(false);
@@ -119,24 +121,20 @@ const TournamentBattlePage = () => {
     // 투표 카운트 증가 (로컬)
     setVoteCount(voteCount + 1);
 
-    // 애니메이션 효과
+    // 애니메이션 효과 후 랭킹 페이지로 이동
     setTimeout(async () => {
       try {
         if (!useDummyData) {
           // 실제 API 호출
           await vote(winner.id, loser.id);
         }
-
-        // 다음 매치 로딩
-        await loadMatch();
       } catch (error) {
-        console.error('투표 또는 다음 매치 로딩 실패:', error);
-        // 에러 발생 시에도 새로운 더미 매치 제공
-        setMatch(getRandomMatch());
-        setUseDummyData(true);
+        console.error('투표 처리 중 오류:', error);
       } finally {
         setIsVoting(false);
         setSelectedSide(null);
+        // 랭킹 페이지로 이동
+        navigate('/images/tournament/ranking');
       }
     }, 800);
   };
@@ -169,9 +167,19 @@ const TournamentBattlePage = () => {
   return (
     <div className="min-h-screen bg-background-light dark:bg-background-dark">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* 돌아가기 버튼 */}
+        <div className="mb-6">
+          <Button variant="secondary" size="small" onClick={() => navigate('/images')}>
+            <span className="flex items-center gap-2">
+              <span className="material-symbols-outlined">arrow_back</span>
+              돌아가기
+            </span>
+          </Button>
+        </div>
+
         {/* 헤더 */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
+        <div className="mb-8 text-center">
+          <div className="flex items-center justify-center gap-3 mb-2">
             <span className="material-symbols-outlined text-5xl text-primary">
               emoji_events
             </span>
@@ -191,6 +199,19 @@ const TournamentBattlePage = () => {
           )}
         </div>
 
+        {/* 바로가기 버튼 그룹 */}
+        <div className="mt-4 mb-8 flex flex-wrap gap-3 justify-center">
+          <Link to="/images/top">
+            <Button variant="primary" size="small">인기top10</Button>
+          </Link>
+          <Link to="/images/tournament/battle">
+            <Button variant="primary" size="small">토너먼트 배틀</Button>
+          </Link>
+          <Link to="/images/tournament/ranking">
+            <Button variant="primary" size="small">토너먼트 랭킹</Button>
+          </Link>
+        </div>
+
         {/* 투표 카운터 */}
         <div className="mb-6 text-center">
           <div className="inline-flex items-center gap-3 px-6 py-3 bg-surface-light dark:bg-surface-dark rounded-full">
@@ -207,23 +228,35 @@ const TournamentBattlePage = () => {
         </div>
 
         {/* 배틀 그리드 */}
-        <div className="relative grid grid-cols-2 gap-8 max-w-xl mx-auto justify-items-center">
+        <div className="relative grid grid-cols-2 gap-8 max-w-xl mx-auto justify-items-center mb-16">
           {/* 왼쪽 이미지 */}
           <div
             className={`
-              relative bg-surface-light dark:bg-surface-dark rounded-2xl overflow-hidden w-[11rem] md:w-[12rem]
+              relative bg-surface-light dark:bg-surface-dark rounded-2xl overflow-hidden w-[11rem] md:w-[12rem] group
               transition-all duration-300
               ${selectedSide === 'left' ? 'ring-4 ring-primary scale-105' : ''}
               ${isVoting ? 'pointer-events-none' : ''}
             `}
           >
             {/* 이미지 */}
-            <div className="aspect-[3/4] relative overflow-hidden max-h-[75px] bg-surface-light dark:bg-surface-dark">
+            <div
+              className="aspect-[3/4] relative overflow-hidden max-h-[30vh] md:max-h-[35vh] bg-surface-light dark:bg-surface-dark cursor-pointer"
+              onClick={() => handleVote(match[0], match[1])}
+              role="button"
+              aria-label="왼쪽 이미지 선택"
+            >
               <img
                 src={match[0].image_url}
                 alt={match[0].prompt}
                 className="w-full h-full object-contain"
               />
+              {/* 호버 시 표시되는 선택 오버레이 (데스크톱) */}
+              <div className="absolute inset-0 hidden md:flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="bg-primary text-white px-4 py-2 rounded-full flex items-center gap-2">
+                  <span className="material-symbols-outlined">thumb_up</span>
+                  이 이미지 선택
+                </div>
+              </div>
               {selectedSide === 'left' && (
                 <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
                   <div className="bg-primary text-white px-6 py-3 rounded-full font-bold text-xl">
@@ -254,7 +287,7 @@ const TournamentBattlePage = () => {
                 size="large"
                 onClick={() => handleVote(match[0], match[1])}
                 disabled={isVoting}
-                className="w-full"
+                className="w-full md:hidden"
               >
                 <span className="flex items-center justify-center gap-2">
                   <span className="material-symbols-outlined">thumb_up</span>
@@ -274,19 +307,31 @@ const TournamentBattlePage = () => {
           {/* 오른쪽 이미지 */}
           <div
             className={`
-              relative bg-surface-light dark:bg-surface-dark rounded-2xl overflow-hidden w-[11rem] md:w-[12rem]
+              relative bg-surface-light dark:bg-surface-dark rounded-2xl overflow-hidden w-[11rem] md:w-[12rem] group
               transition-all duration-300
               ${selectedSide === 'right' ? 'ring-4 ring-primary scale-105' : ''}
               ${isVoting ? 'pointer-events-none' : ''}
             `}
           >
             {/* 이미지 */}
-            <div className="aspect-[3/4] relative overflow-hidden max-h-[75px] bg-surface-light dark:bg-surface-dark">
+            <div
+              className="aspect-[3/4] relative overflow-hidden max-h-[30vh] md:max-h-[35vh] bg-surface-light dark:bg-surface-dark cursor-pointer"
+              onClick={() => handleVote(match[1], match[0])}
+              role="button"
+              aria-label="오른쪽 이미지 선택"
+            >
               <img
                 src={match[1].image_url}
                 alt={match[1].prompt}
                 className="w-full h-full object-contain"
               />
+              {/* 호버 시 표시되는 선택 오버레이 (데스크톱) */}
+              <div className="absolute inset-0 hidden md:flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="bg-primary text-white px-4 py-2 rounded-full flex items-center gap-2">
+                  <span className="material-symbols-outlined">thumb_up</span>
+                  이 이미지 선택
+                </div>
+              </div>
               {selectedSide === 'right' && (
                 <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
                   <div className="bg-primary text-white px-6 py-3 rounded-full font-bold text-xl">
@@ -317,7 +362,7 @@ const TournamentBattlePage = () => {
                 size="large"
                 onClick={() => handleVote(match[1], match[0])}
                 disabled={isVoting}
-                className="w-full"
+                className="w-full md:hidden"
               >
                 <span className="flex items-center justify-center gap-2">
                   <span className="material-symbols-outlined">thumb_up</span>
@@ -328,8 +373,13 @@ const TournamentBattlePage = () => {
           </div>
         </div>
 
+        
+
+        {/* 섹션 간 간격 확보 */}
+        <div className="h-8 sm:h-12" aria-hidden="true"></div>
+
         {/* 하단 안내 */}
-        <div className="mt-12 text-center p-6 bg-surface-light dark:bg-surface-dark rounded-xl">
+        <div className="mt-16 text-center p-6 bg-surface-light dark:bg-surface-dark rounded-xl">
           <p className="text-muted-light dark:text-muted-dark">
             💡 투표 결과는 랭킹에 반영됩니다
           </p>

@@ -59,7 +59,11 @@ class AuthService {
    * 로그인
    */
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    const response = await api.post<AuthResponse>('/auth/login/', credentials);
+    const payload = {
+      ...credentials,
+      nickname: credentials.email, // 일부 백엔드 호환용
+    };
+    const response = await api.post<AuthResponse>('/auth/login/', payload);
 
     this.persistAuth(response.data);
 

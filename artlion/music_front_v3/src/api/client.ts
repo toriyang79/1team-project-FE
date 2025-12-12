@@ -1,10 +1,11 @@
 import axios from 'axios';
 
-// 베이스 URL: 환경 변수 우선, 없으면 dev 프록시(/music-api)
+// 베이스 URL: 환경 변수 우선, 없으면 음악 프록시(/music-api)
 const API_BASE_URL = import.meta.env.VITE_MUSIC_API_BASE_URL || '/music-api';
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
+  withCredentials: true,
 });
 
 // 요청 인터셉터: 로컬스토리지 토큰을 Authorization 헤더로 추가

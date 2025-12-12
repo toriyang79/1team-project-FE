@@ -59,19 +59,6 @@ const HomePage = () => {
     return track.genre ?? (duration ? `길이 ${duration}` : null);
   };
 
-  const getUploaderName = (track: Track) => {
-    // 백엔드에서 닉네임/이름을 내려주면 우선 사용
-    const backendName = (track as any).owner_nickname || (track as any).owner_name;
-    if (backendName) return backendName;
-
-    // 업로더가 현재 로그인 사용자라면 닉네임/이메일
-    if (track.owner_user_id && isAuthenticated && user?.id === track.owner_user_id) {
-      return user?.nickname || user?.email || `ID ${track.owner_user_id}`;
-    }
-
-    // 마지막으로 ID라도 노출
-    return track.owner_user_id ? `ID ${track.owner_user_id}` : "-";
-  };
 
   const safeTracks = tracks.filter((t) => !unavailable.has(t.id));
 
@@ -104,7 +91,6 @@ const HomePage = () => {
             {track.downloads_count ?? 0}
           </span>
         </div>
-        <p className="text-[11px] text-muted-light truncate">업로더: {getUploaderName(track)}</p>
       </div>
     </article>
   );
@@ -191,7 +177,6 @@ const HomePage = () => {
                       {track.downloads_count ?? 0}
                     </span>
                   </div>
-                  <p className="text-[11px] text-muted-light truncate">업로더: {getUploaderName(track)}</p>
                   <p className="text-xs text-muted-light truncate">
                     {track.ai_provider} · {track.ai_model}
                   </p>

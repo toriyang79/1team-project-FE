@@ -31,12 +31,7 @@ const TrackDetailPage = () => {
   const trackId = Number(id);
   const isOwner = isAuthenticated && track?.owner_user_id !== undefined && user?.id === track.owner_user_id;
 
-  const getUploaderName = (t: Track) => {
-    if (t.owner_user_id && isAuthenticated && user?.id === t.owner_user_id) {
-      return user?.nickname || user?.email || `ID ${t.owner_user_id}`;
-    }
-    return (t as any).owner_nickname || (t as any).owner_name || (t.owner_user_id ? `ID ${t.owner_user_id}` : "-");
-  };
+  const getUploaderName = (_t: Track) => ""; // 업로더 표시는 잠시 비활성화
 
   const formatDuration = (value: number | string | null | undefined) => {
     if (value === null || value === undefined) return null;
@@ -253,7 +248,7 @@ const TrackDetailPage = () => {
                   <span>좋아요 {likesCount}</span>
                   <span>재생 {track.plays_count}</span>
                   <span>다운로드 {track.downloads_count ?? 0}</span>
-                  <span>업로더 {getUploaderName(track)}</span>
+                <span>업로더</span>
                 </div>
               </div>
               <div className="flex gap-3 flex-wrap text-sm">
@@ -384,7 +379,6 @@ const TrackDetailPage = () => {
                       {item.downloads_count ?? 0}
                     </span>
                   </div>
-                  <p className="text-[11px] text-muted-light truncate">업로더: {getUploaderName(item)}</p>
                   <p className="text-[11px] text-muted-light truncate">
                     {item.ai_provider} · {item.ai_model}
                   </p>

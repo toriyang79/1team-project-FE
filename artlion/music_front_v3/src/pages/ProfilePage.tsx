@@ -25,6 +25,7 @@ const ProfilePage = () => {
     return track.genre ?? (duration ? `길이 ${duration}` : null);
   };
 
+
   useEffect(() => {
     listTracks()
       .then((res) => {
@@ -118,9 +119,6 @@ const ProfilePage = () => {
                       {track.plays_count ?? 0}
                     </span>
                   </div>
-                  <p className="text-[11px] text-muted-light truncate">
-                    업로더: {user?.nickname || user?.email || "-"}
-                  </p>
                   <p className="text-[11px] text-muted-light truncate">
                     {track.ai_provider} · {track.ai_model}
                   </p>

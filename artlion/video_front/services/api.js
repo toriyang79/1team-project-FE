@@ -3,7 +3,15 @@ import axios from "axios";
 // 로컬(dev)에서는 프록시 경로(/video-api)로 강제해 CORS 회피, 배포 시에는 환경 변수 사용
 const isLocalhost = typeof window !== "undefined" && window.location.origin.includes("localhost");
 const envVideoBase = (import.meta.env.VITE_VIDEO_API_URL || "").trim();
-const API_VIDEO_BASE_URL = envVideoBase || (isLocalhost ? "/video-api" : "https://shorts-artlion.duckdns.org/api");
+// env 값을 우선 그대로 사용하되, 끝에 붙은 / 또는 /videos를 제거해 중복 호출을 막는다.
+const normalizeBase = (base) => {
+  if (!base) return "";
+  let val = base.replace(/\/+$/, "");
+  val = val.replace(/\/videos?$/i, ""); // .../api/videos -> .../api
+  return val;
+};
+const normalizedEnvBase = normalizeBase(envVideoBase);
+const API_VIDEO_BASE_URL = normalizedEnvBase || (isLocalhost ? "/video-api" : "https://shorts-artlion.duckdns.org/api");
 
 const api = axios.create({
   baseURL: API_VIDEO_BASE_URL,

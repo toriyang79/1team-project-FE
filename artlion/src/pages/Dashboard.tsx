@@ -20,7 +20,9 @@ const Dashboard: React.FC = () => {
   const [popularVideos, setPopularVideos] = useState<VideoItem[]>([]);
   const { play } = usePlayer();
   const isLocalhost = typeof window !== 'undefined' && window.location.origin.includes('localhost');
-  const videoApiBase = (import.meta.env.VITE_VIDEO_API_URL || '').trim() || (isLocalhost ? '/video-api' : 'https://shorts-artlion.duckdns.org/api');
+  const rawVideoBase = (import.meta.env.VITE_VIDEO_API_URL || '').trim();
+  // env가 있으면 그대로(뒤 슬래시 제거) 사용, 없을 때만 기본값(/api 포함)으로 fallback
+  const videoApiBase = rawVideoBase ? rawVideoBase.replace(/\/+$/, '') : (isLocalhost ? '/video-api' : 'https://shorts-artlion.duckdns.org/api');
   const buildVideoUrl = (path: string) => `${videoApiBase.replace(/\/$/, '')}${path}`;
 
   const imageSamples = useMemo<ImageItem[]>(
@@ -55,7 +57,7 @@ const Dashboard: React.FC = () => {
     listTracks()
       .then((res) => {
         const data = Array.isArray(res.data) ? res.data : [];
-        setTracks(data.slice(0, 8));
+        setTracks(data.slice(0, 4));
       })
       .catch((err) => {
         console.error('Failed to fetch tracks', err);

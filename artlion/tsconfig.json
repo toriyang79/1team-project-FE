@@ -26,6 +26,7 @@
         ]
     },
     "include": [
+        "src",
         "music_front_v3/src"
     ]
 }

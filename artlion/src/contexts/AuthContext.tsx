@@ -33,19 +33,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const initAuth = async () => {
       try {
         if (authService.isAuthenticated()) {
-          // 저장된 사용자 정보 가져오기
           const storedUser = authService.getStoredUser();
           if (storedUser) {
             setUser(storedUser);
+          }
 
-            // 서버에서 최신 정보 가져오기 (백그라운드)
-            try {
-              const currentUser = await authService.getCurrentUser();
-              setUser(currentUser);
-            } catch (error) {
-              console.error('Failed to fetch current user:', error);
-              // 토큰이 만료된 경우 자동으로 로그아웃됨 (interceptor에서 처리)
-            }
+          try {
+            const currentUser = await authService.getCurrentUser();
+            setUser(currentUser);
+          } catch (error) {
+            console.error('Failed to fetch current user:', error);
+            // 백엔드 에러일 수 있으므로 토큰은 유지, 사용자만 초기화
+            setUser(null);
           }
         }
       } catch (error) {
@@ -62,6 +61,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const response = await authService.login(credentials);
       setUser(response.user);
+      try {
+        const currentUser = await authService.getCurrentUser();
+        setUser(currentUser);
+      } catch (error) {
+        console.error('Post-login fetch current user failed:', error);
+        // fallback으로 로그인 응답 user 유지
+      }
     } catch (error) {
       console.error('Login error:', error);
       throw error;

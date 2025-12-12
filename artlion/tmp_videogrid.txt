@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { videoAPI } from "../services/api";
-import VideoPlayer from "./VideoPlayer";
-import DeleteConfirmModal from "./DeleteConfirmModal";
-import EditModal from "./EditModal";
-import "../styles/VideoGrid.css";
+﻿import React, { useState, useEffect } from 'react';
+import { videoAPI } from '../services/api';
+import VideoPlayer from './VideoPlayer';
+import DeleteConfirmModal from './DeleteConfirmModal';
+import EditModal from './EditModal';
+import '../styles/VideoGrid.css';
 
 const VideoGrid = ({ refreshTrigger, searchQuery, onVideoSelect }) => {
   const [videos, setVideos] = useState([]);
@@ -20,30 +20,32 @@ const VideoGrid = ({ refreshTrigger, searchQuery, onVideoSelect }) => {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [videoToEdit, setVideoToEdit] = useState(null);
 
-  const fetchVideos = useCallback(async () => {
+  useEffect(() => {
+    fetchVideos();
+  }, [refreshTrigger, searchQuery]);
+
+  const fetchVideos = async () => {
     try {
       setLoading(true);
       let data;
 
-      if (searchQuery && searchQuery.trim() !== "") {
+      if (searchQuery && searchQuery.trim() !== '') {
+        // Search mode
         data = await videoAPI.searchVideos(searchQuery, 0, 50);
       } else {
+        // Normal mode - get all videos
         data = await videoAPI.getVideos(0, 50);
       }
 
       setVideos(data.videos || []);
       setError(null);
     } catch (err) {
-      setError("영상 목록을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.");
-      console.error("Error fetching videos:", err);
+      setError('Failed to load videos. Please try again later.');
+      console.error('Error fetching videos:', err);
     } finally {
       setLoading(false);
     }
-  }, [searchQuery]);
-
-  useEffect(() => {
-    fetchVideos();
-  }, [fetchVideos, refreshTrigger]);
+  };
 
   const handleScroll = (e) => {
     const container = e.target;
@@ -56,6 +58,7 @@ const VideoGrid = ({ refreshTrigger, searchQuery, onVideoSelect }) => {
     }
   };
 
+  // Delete handlers
   const handleDeleteClick = (video) => {
     setVideoToDelete(video);
     setDeleteModalOpen(true);
@@ -67,12 +70,13 @@ const VideoGrid = ({ refreshTrigger, searchQuery, onVideoSelect }) => {
     setIsDeleting(true);
     try {
       await videoAPI.deleteVideo(videoToDelete.id);
-      setVideos((prev) => prev.filter((v) => v.id !== videoToDelete.id));
+      // Remove from local state
+      setVideos(videos.filter(v => v.id !== videoToDelete.id));
       setDeleteModalOpen(false);
       setVideoToDelete(null);
     } catch (err) {
-      console.error("Error deleting video:", err);
-      alert("삭제 중 오류가 발생했습니다. 다시 시도해주세요.");
+      console.error('Error deleting video:', err);
+      alert('ì‚­ì œ ì¤‘ ì˜¤ë¥˜ê°€ ë°œìƒí–ˆìŠµë‹ˆë‹¤.');
     } finally {
       setIsDeleting(false);
     }
@@ -83,13 +87,15 @@ const VideoGrid = ({ refreshTrigger, searchQuery, onVideoSelect }) => {
     setVideoToDelete(null);
   };
 
+  // Edit handlers
   const handleEditClick = (video) => {
     setVideoToEdit(video);
     setEditModalOpen(true);
   };
 
   const handleEditSuccess = (updatedVideo) => {
-    setVideos((prev) => prev.map((v) => (v.id === updatedVideo.id ? updatedVideo : v)));
+    // Update local state
+    setVideos(videos.map(v => v.id === updatedVideo.id ? updatedVideo : v));
     setEditModalOpen(false);
     setVideoToEdit(null);
   };
@@ -123,8 +129,14 @@ const VideoGrid = ({ refreshTrigger, searchQuery, onVideoSelect }) => {
   if (videos.length === 0) {
     return (
       <div className="video-grid-empty">
-        <span className="material-symbols-outlined">{searchQuery ? "search_off" : "video_library"}</span>
-        <p>{searchQuery ? `"${searchQuery}"에 대한 검색 결과가 없습니다.` : "No videos available"}</p>
+        <span className="material-symbols-outlined">
+          {searchQuery ? 'search_off' : 'video_library'}
+        </span>
+        <p>
+          {searchQuery
+            ? `"${searchQuery}"ì— ëŒ€í•œ ê²€ìƒ‰ ê²°ê³¼ê°€ ì—†ìŠµë‹ˆë‹¤`
+            : 'No videos available'}
+        </p>
       </div>
     );
   }
@@ -132,9 +144,14 @@ const VideoGrid = ({ refreshTrigger, searchQuery, onVideoSelect }) => {
   return (
     <>
       <div className="video-grid-container" onScroll={handleScroll}>
-        {videos.map((video) => (
+        {videos.map((video, index) => (
           <div key={video.id} className="video-grid-item">
-            <VideoPlayer video={video} onDelete={handleDeleteClick} onEdit={handleEditClick} onSelect={onVideoSelect} />
+            <VideoPlayer
+              video={video}
+              onDelete={handleDeleteClick}
+              onEdit={handleEditClick}
+              onSelect={onVideoSelect}
+            />
           </div>
         ))}
       </div>
@@ -147,9 +164,15 @@ const VideoGrid = ({ refreshTrigger, searchQuery, onVideoSelect }) => {
         isDeleting={isDeleting}
       />
 
-      <EditModal isOpen={editModalOpen} onClose={handleEditCancel} video={videoToEdit} onEditSuccess={handleEditSuccess} />
+      <EditModal
+        isOpen={editModalOpen}
+        onClose={handleEditCancel}
+        video={videoToEdit}
+        onEditSuccess={handleEditSuccess}
+      />
     </>
   );
 };
 
 export default VideoGrid;
+

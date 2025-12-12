@@ -34,18 +34,38 @@ export interface AuthResponse {
 }
 
 class AuthService {
+  private persistAuth(responseData: any) {
+    const tokens = responseData?.tokens || {};
+    const access =
+      tokens.access ||
+      responseData?.access ||
+      responseData?.access_token ||
+      null;
+    const refresh =
+      tokens.refresh ||
+      responseData?.refresh ||
+      responseData?.refresh_token ||
+      null;
+    const user = responseData?.user || null;
+
+    if (access) localStorage.setItem('access_token', access);
+    if (refresh) localStorage.setItem('refresh_token', refresh);
+    if (user) localStorage.setItem('user', JSON.stringify(user));
+
+    return user;
+  }
+
   /**
    * 로그인
    */
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    const response = await api.post<AuthResponse>('/login/', credentials);
+    const payload = {
+      ...credentials,
+      nickname: credentials.email, // 일부 백엔드 호환용
+    };
+    const response = await api.post<AuthResponse>('/auth/login/', payload);
 
-    // 토큰과 사용자 정보 저장
-    if (response.data.tokens) {
-      localStorage.setItem('access_token', response.data.tokens.access);
-      localStorage.setItem('refresh_token', response.data.tokens.refresh);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
-    }
+    this.persistAuth(response.data);
 
     return response.data;
   }
@@ -54,14 +74,9 @@ class AuthService {
    * 회원가입
    */
   async register(data: RegisterData): Promise<AuthResponse> {
-    const response = await api.post<AuthResponse>('/register/', data);
+    const response = await api.post<AuthResponse>('/auth/register/', data);
 
-    // 토큰과 사용자 정보 저장
-    if (response.data.tokens) {
-      localStorage.setItem('access_token', response.data.tokens.access);
-      localStorage.setItem('refresh_token', response.data.tokens.refresh);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
-    }
+    this.persistAuth(response.data);
 
     return response.data;
   }
@@ -89,7 +104,7 @@ class AuthService {
    * 현재 사용자 정보 조회
    */
   async getCurrentUser(): Promise<User> {
-    const response = await api.get<User>('/me/');
+    const response = await api.get<User>('/auth/me/');
 
     // 사용자 정보 업데이트
     localStorage.setItem('user', JSON.stringify(response.data));

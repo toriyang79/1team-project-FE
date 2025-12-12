@@ -16,6 +16,7 @@
         "isolatedModules": true,
         "noEmit": true,
         "jsx": "react-jsx",
+        "allowJs": true,
         /* Linting */
         "strict": true,
         "noUnusedLocals": true,
@@ -27,6 +28,8 @@
     },
     "include": [
         "src",
-        "music_front_v3/src"
+        "music_front_v3/src",
+        "img_front",
+        "video_front"
     ]
 }

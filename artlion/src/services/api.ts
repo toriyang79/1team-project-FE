@@ -31,8 +31,19 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // 로그인/회원가입/로그아웃/토큰갱신 요청은 리프레시 로직을 건너뛴다.
+    const skipRefresh =
+      originalRequest?.url?.includes('/auth/login') ||
+      originalRequest?.url?.includes('/auth/register') ||
+      originalRequest?.url?.includes('/auth/token/refresh') ||
+      originalRequest?.url?.includes('/logout/');
+
     // 401 에러이고 재시도가 아닌 경우
     if (error.response?.status === 401 && !originalRequest._retry) {
+      if (skipRefresh) {
+        return Promise.reject(error);
+      }
+
       originalRequest._retry = true;
 
       try {
@@ -57,7 +68,6 @@ api.interceptors.response.use(
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
         localStorage.removeItem('user');
-        window.location.href = '/login';
         return Promise.reject(refreshError);
       }
     }

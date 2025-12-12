@@ -36,9 +36,9 @@ export default defineConfig({
         secure: false,
       },
       '/img-api': {
-        target: 'http://13.125.57.129:8000',
+        target: 'https://www.imagelion.p-e.kr',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/img-api/, '/api/v1'),
+        rewrite: (path) => path.replace(/^\/img-api/, '/api-image/v1'),
         secure: false,
       },
     },

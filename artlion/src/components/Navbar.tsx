@@ -58,7 +58,7 @@ const Navbar: React.FC<NavbarProps> = ({
           </Link>
 
           <nav className="hidden md:flex items-center gap-9 text-text-light dark:text-text-dark">
-            <Link to="/image" className="text-sm font-medium hover:text-primary transition-colors">
+            <Link to="/images" className="text-sm font-medium hover:text-primary transition-colors">
               이미지
             </Link>
             <Link to="/music" className="text-sm font-medium hover:text-primary transition-colors">

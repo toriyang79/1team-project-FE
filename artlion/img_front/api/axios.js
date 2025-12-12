@@ -4,11 +4,11 @@ import axios from 'axios';
 // 프로덕션: 직접 백엔드 API 호출, 개발: vite proxy 사용
 const getBaseURL = () => {
   // 환경변수가 설정되어 있으면 우선 사용
-  if (import.meta.env.VITE_IMG_API_BASE_URL) {
-    return import.meta.env.VITE_IMG_API_BASE_URL;
+  if (import.meta.env.REACT_APP_IMG_MEDIA_BASE_URL) {
+    return import.meta.env.REACT_APP_IMG_MEDIA_BASE_URL;
   }
-  if (import.meta.env.VITE_API_BASE_URL) {
-    return import.meta.env.VITE_API_BASE_URL;
+  if (import.meta.env.REACT_APP_IMG_API_BASE_URL) {
+    return import.meta.env.REACT_APP_IMG_API_BASE_URL;
   }
 
   // 프로덕션 환경 감지 (localhost가 아니면 프로덕션으로 간주)
@@ -17,7 +17,7 @@ const getBaseURL = () => {
 
   if (isProduction) {
     // 프로덕션: 백엔드 API 직접 호출
-    return 'http://13.125.57.129:8000/api/v1';
+    return 'http://13.125.57.129:8000/api-image/v1';
   } else {
     // 개발: vite proxy 사용
     return '/img-api';

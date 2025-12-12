@@ -40,8 +40,8 @@ const PublicRoute: React.FC<{ children: React.ReactElement }> = ({ children }) =
   return !isAuthenticated ? children : <Navigate to="/" replace />;
 };
 
-import VideoPage from './pages/VideoPage';
-import ImagePage from './pages/ImagePage';
+import VideoPage from '../video_front/App';
+// import ImagePage from './pages/ImagePage';
 
 function App() {
   return (
@@ -51,7 +51,7 @@ function App() {
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Dashboard />} />
-            <Route path="/image" element={<Navigate to="/images" replace />} />
+            {/* <Route path="/image" element={<Navigate to="/images" replace />} /> */}
             <Route path="/images/*" element={<ImageApp />} />
             <Route path="/video" element={<VideoPage />} />
             <Route

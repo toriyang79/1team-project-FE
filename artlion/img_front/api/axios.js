@@ -1,23 +1,34 @@
 import axios from 'axios';
 
-// 팀 내 변수명 충돌을 피하기 위해 API_VIDEO_BASE_URL 사용 (이미지 API용)
+// 패 내 변수명 충돌을 피하기 위해 API_VIDEO_BASE_URL 사용 (이미지 API용)
 // 프로덕션: 직접 백엔드 API 호출, 개발: vite proxy 사용
 const getBaseURL = () => {
-  // 환경변수가 설정되어 있으면 우선 사용
-  if (import.meta.env.REACT_APP_IMG_MEDIA_BASE_URL) {
-    return import.meta.env.REACT_APP_IMG_MEDIA_BASE_URL;
+  const env = import.meta?.env || {};
+
+  // Vite 환경변수(VITE_*) 활용
+  if (env.VITE_IMG_MEDIA_BASE_URL) {
+    return env.VITE_IMG_MEDIA_BASE_URL;
   }
-  if (import.meta.env.REACT_APP_IMG_API_BASE_URL) {
-    return import.meta.env.REACT_APP_IMG_API_BASE_URL;
+  if (env.VITE_IMG_API_BASE_URL) {
+    return env.VITE_IMG_API_BASE_URL;
   }
 
-  // 프로덕션 환경 감지 (localhost가 아니면 프로덕션으로 간주)
-  const isProduction = !window.location.hostname.includes('localhost') &&
-                       !window.location.hostname.includes('127.0.0.1');
+  // CRA 스타일 환경변수도 허용
+  if (env.REACT_APP_IMG_MEDIA_BASE_URL) {
+    return env.REACT_APP_IMG_MEDIA_BASE_URL;
+  }
+  if (env.REACT_APP_IMG_API_BASE_URL) {
+    return env.REACT_APP_IMG_API_BASE_URL;
+  }
+
+  // 프로덕션 환경 감지 (localhost / 127.0.0.1 이외)
+  const isProduction =
+    !window.location.hostname.includes('localhost') &&
+    !window.location.hostname.includes('127.0.0.1');
 
   if (isProduction) {
-    // 프로덕션: 백엔드 API 직접 호출
-    return 'http://13.125.57.129:8000/api-image/v1';
+    // 프로덕션: 백엔드 API 직접 호출(HTTPS 기본값으로 혼합 콘텐츠 방지)
+    return 'https://www.imagelion.p-e.kr/api-image/v1';
   } else {
     // 개발: vite proxy 사용
     return '/img-api';

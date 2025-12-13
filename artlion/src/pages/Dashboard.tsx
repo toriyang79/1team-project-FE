@@ -20,6 +20,8 @@ const Dashboard: React.FC = () => {
   const [popularVideos, setPopularVideos] = useState<VideoItem[]>([]);
   const { play } = usePlayer();
   const isLocalhost = typeof window !== 'undefined' && window.location.origin.includes('localhost');
+  const imageApiBase = (import.meta.env.VITE_IMG_API_BASE_URL || import.meta.env.REACT_APP_IMG_API_BASE_URL || '').trim()
+    || (isLocalhost ? '/img-api' : 'https://www.imagelion.p-e.kr/api-image');
   const rawVideoBase = (import.meta.env.VITE_VIDEO_API_URL || '').trim();
   // env가 있으면 그대로(뒤 슬래시 제거) 사용, 없을 때만 기본값(/api 포함)으로 fallback
   const videoApiBase = rawVideoBase ? rawVideoBase.replace(/\/+$/, '') : (isLocalhost ? '/video-api' : 'https://shorts-artlion.duckdns.org/api');
@@ -65,7 +67,7 @@ const Dashboard: React.FC = () => {
       });
 
     // 인기 이미지
-    fetch('/img-api/images/feed/top-24h?limit=4')
+    fetch(`${imageApiBase.replace(/\/$/, '')}/images/feed/top-24h?limit=4`)
       .then((res) => (res.ok ? res.json() : Promise.reject()))
       .then((data) => {
         const items = Array.isArray((data as any)?.items) ? (data as any).items : Array.isArray(data) ? data : [];

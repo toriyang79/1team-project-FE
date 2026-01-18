@@ -1,0 +1,320 @@
+.edit-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.edit-modal-content {
+  border-radius: 1rem;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.edit-modal-overlay.light .edit-modal-content {
+  background-color: var(--background-light);
+  color: var(--text-light);
+}
+
+.edit-modal-overlay.dark .edit-modal-content {
+  background-color: var(--background-dark);
+  color: var(--text-dark);
+}
+
+.edit-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  border-bottom: 1px solid;
+}
+
+.edit-modal-overlay.light .edit-modal-header {
+  border-color: var(--surface-light);
+}
+
+.edit-modal-overlay.dark .edit-modal-header {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.edit-modal-header h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.edit-modal-body {
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.edit-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.edit-label {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.filename-input-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid;
+}
+
+.edit-modal-overlay.light .filename-input-container {
+  background-color: var(--surface-light);
+  border-color: var(--surface-light);
+}
+
+.edit-modal-overlay.dark .filename-input-container {
+  background-color: var(--surface-dark);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.filename-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+  outline: none;
+}
+
+.edit-modal-overlay.light .filename-input {
+  color: var(--text-light);
+}
+
+.edit-modal-overlay.dark .filename-input {
+  color: var(--text-dark);
+}
+
+.filename-input:disabled {
+  opacity: 0.5;
+}
+
+.file-extension {
+  font-weight: 600;
+  opacity: 0.7;
+}
+
+.file-replace-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.select-file-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  border: 2px dashed;
+  transition: all 0.2s ease;
+  font-weight: 600;
+}
+
+.edit-modal-overlay.light .select-file-btn {
+  background-color: var(--surface-light);
+  border-color: var(--muted-light);
+  color: var(--text-light);
+}
+
+.edit-modal-overlay.dark .select-file-btn {
+  background-color: var(--surface-dark);
+  border-color: var(--muted-dark);
+  color: var(--text-dark);
+}
+
+.select-file-btn:hover:not(:disabled) {
+  border-color: var(--primary);
+}
+
+.select-file-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.selected-file-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 0.75rem;
+}
+
+.edit-modal-overlay.light .selected-file-info {
+  background-color: var(--surface-light);
+}
+
+.edit-modal-overlay.dark .selected-file-info {
+  background-color: var(--surface-dark);
+}
+
+.selected-file-info .material-symbols-outlined {
+  font-size: 32px;
+  color: var(--primary);
+}
+
+.file-details {
+  flex: 1;
+}
+
+.file-name {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  word-break: break-all;
+  font-size: 0.875rem;
+}
+
+.file-size {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.remove-file-btn {
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.edit-modal-overlay.light .remove-file-btn {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--text-light);
+}
+
+.edit-modal-overlay.dark .remove-file-btn {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--text-dark);
+}
+
+.remove-file-btn:hover:not(:disabled) {
+  opacity: 0.7;
+}
+
+.edit-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.progress-bar {
+  height: 8px;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.edit-modal-overlay.light .progress-bar {
+  background-color: var(--surface-light);
+}
+
+.edit-modal-overlay.dark .progress-bar {
+  background-color: var(--surface-dark);
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: var(--primary);
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  text-align: center;
+  font-weight: 600;
+  color: var(--primary);
+  font-size: 0.875rem;
+}
+
+.edit-error {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.edit-error .material-symbols-outlined {
+  font-size: 24px;
+}
+
+.edit-modal-footer {
+  display: flex;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-top: 1px solid;
+  justify-content: flex-end;
+}
+
+.edit-modal-overlay.light .edit-modal-footer {
+  border-color: var(--surface-light);
+}
+
+.edit-modal-overlay.dark .edit-modal-footer {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.btn-cancel,
+.btn-save {
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  min-width: 100px;
+}
+
+.btn-cancel {
+  border: 1px solid;
+}
+
+.edit-modal-overlay.light .btn-cancel {
+  background-color: transparent;
+  border-color: var(--surface-light);
+  color: var(--text-light);
+}
+
+.edit-modal-overlay.dark .btn-cancel {
+  background-color: transparent;
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--text-dark);
+}
+
+.btn-cancel:hover:not(:disabled) {
+  opacity: 0.7;
+}
+
+.btn-save {
+  background-color: var(--primary);
+  color: var(--background-dark);
+  border: none;
+}
+
+.btn-save:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.btn-save:disabled,
+.btn-cancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

@@ -1,0 +1,76 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  height: 90%;
+  max-width: 1400px;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+
+.close-button {
+  position: absolute;
+  top: 15px;
+  right: 25px;
+  background: none;
+  border: none;
+  font-size: 2.5rem;
+  color: #333;
+  cursor: pointer;
+  z-index: 1010;
+  line-height: 1;
+}
+
+.modal-video-player-container {
+  flex-basis: 67%; /* 2/3 of the space */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #000;
+}
+
+.modal-comment-section-container {
+  flex-basis: 33%; /* 1/3 of the space */
+  border-left: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Style Overrides for Video Player inside Modal --- */
+
+/* Allow the video player to fill the modal's video container */
+.modal-video-player-container .video-player-container {
+    max-width: 100%;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+
+/* Remove fixed aspect ratio and other grid-specific styles */
+.modal-video-player-container .video-wrapper {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: unset;
+    border-radius: 0;
+}
+
+/* Display the full video, preserving its original aspect ratio */
+.modal-video-player-container .video-element {
+  object-fit: contain;
+}

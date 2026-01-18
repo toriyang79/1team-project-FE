@@ -1,0 +1,305 @@
+.upload-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.upload-modal-content {
+  border-radius: 1rem;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.upload-modal-overlay.light .upload-modal-content {
+  background-color: var(--background-light);
+  color: var(--text-light);
+}
+
+.upload-modal-overlay.dark .upload-modal-content {
+  background-color: var(--background-dark);
+  color: var(--text-dark);
+}
+
+.upload-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  border-bottom: 1px solid;
+}
+
+.upload-modal-overlay.light .upload-modal-header {
+  border-color: var(--surface-light);
+}
+
+.upload-modal-overlay.dark .upload-modal-header {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.upload-modal-header h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.upload-modal-overlay.light .close-button {
+  color: var(--text-light);
+}
+
+.upload-modal-overlay.dark .close-button {
+  color: var(--text-dark);
+}
+
+.close-button:hover {
+  opacity: 0.7;
+}
+
+.upload-modal-body {
+  padding: 2rem 1.5rem;
+}
+
+.upload-dropzone {
+  border: 2px dashed;
+  border-radius: 1rem;
+  padding: 3rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.upload-modal-overlay.light .upload-dropzone {
+  border-color: var(--muted-light);
+  background-color: var(--surface-light);
+}
+
+.upload-modal-overlay.dark .upload-dropzone {
+  border-color: var(--muted-dark);
+  background-color: var(--surface-dark);
+}
+
+.upload-dropzone:hover,
+.upload-dropzone.active {
+  border-color: var(--primary);
+}
+
+.upload-modal-overlay.light .upload-dropzone:hover,
+.upload-modal-overlay.light .upload-dropzone.active {
+  background-color: rgba(238, 173, 43, 0.1);
+}
+
+.upload-modal-overlay.dark .upload-dropzone:hover,
+.upload-modal-overlay.dark .upload-dropzone.active {
+  background-color: rgba(238, 173, 43, 0.1);
+}
+
+.upload-icon {
+  font-size: 64px;
+  color: var(--primary);
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.upload-text {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.upload-hint {
+  font-size: 0.875rem;
+  opacity: 0.7;
+}
+
+.file-selected {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+}
+
+.upload-modal-overlay.light .file-info {
+  background-color: var(--surface-light);
+}
+
+.upload-modal-overlay.dark .file-info {
+  background-color: var(--surface-dark);
+}
+
+.file-info .material-symbols-outlined {
+  font-size: 48px;
+  color: var(--primary);
+}
+
+.file-details {
+  flex: 1;
+}
+
+.file-name {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  word-break: break-all;
+}
+
+.file-size {
+  font-size: 0.875rem;
+  opacity: 0.7;
+}
+
+.upload-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.progress-bar {
+  height: 8px;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.upload-modal-overlay.light .progress-bar {
+  background-color: var(--surface-light);
+}
+
+.upload-modal-overlay.dark .progress-bar {
+  background-color: var(--surface-dark);
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: var(--primary);
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  text-align: center;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.change-file-button {
+  align-self: flex-start;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.upload-modal-overlay.light .change-file-button {
+  background-color: var(--surface-light);
+  color: var(--text-light);
+}
+
+.upload-modal-overlay.dark .change-file-button {
+  background-color: var(--surface-dark);
+  color: var(--text-dark);
+}
+
+.change-file-button:hover {
+  opacity: 0.8;
+}
+
+.upload-error {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  margin-top: 1rem;
+}
+
+.upload-error .material-symbols-outlined {
+  font-size: 24px;
+}
+
+.upload-modal-footer {
+  display: flex;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-top: 1px solid;
+  justify-content: flex-end;
+}
+
+.upload-modal-overlay.light .upload-modal-footer {
+  border-color: var(--surface-light);
+}
+
+.upload-modal-overlay.dark .upload-modal-footer {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.btn-cancel,
+.btn-upload {
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  min-width: 100px;
+}
+
+.btn-cancel {
+  border: 1px solid;
+}
+
+.upload-modal-overlay.light .btn-cancel {
+  background-color: transparent;
+  border-color: var(--surface-light);
+  color: var(--text-light);
+}
+
+.upload-modal-overlay.dark .btn-cancel {
+  background-color: transparent;
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--text-dark);
+}
+
+.btn-cancel:hover:not(:disabled) {
+  opacity: 0.7;
+}
+
+.btn-upload {
+  background-color: var(--primary);
+  color: var(--background-dark);
+  border: none;
+}
+
+.btn-upload:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.btn-upload:disabled,
+.btn-cancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
